@@ -1,0 +1,154 @@
+substitutions:
+  devicename: langgeleden
+  upper_devicename: Lang Geleden
+
+
+globals:
+  - id: global_modus
+    type: int
+    restore_value: no
+    initial_value: '0'
+
+
+packages:
+  wifi: !include common/wifi.yaml
+  always: !include common/always.yaml
+
+
+esphome:
+  name: ${devicename}
+  platform: ESP8266
+  board: nodemcu
+
+
+# Enable Home Assistant API
+api:
+
+
+time:
+
+  - platform: homeassistant
+    id: homeassistant_time
+
+
+binary_sensor:
+
+  - platform: gpio
+    pin:
+      number: D1
+      mode: INPUT_PULLUP
+      inverted: True
+    name: ${upper_devicename} Reset Links
+    filters:
+      - delayed_on: 10ms
+    on_click:
+      - min_length: 20ms
+        max_length: 500ms
+        then:
+          - homeassistant.service:
+              service: counter.increment
+              data: 
+                entity_id: counter.teller_langgeleden_links
+      - min_length: 2s
+        max_length: 5s
+        then:
+          - homeassistant.service:
+              service: counter.reset
+              data: 
+                entity_id: counter.teller_langgeleden_links
+
+  - platform: gpio
+    pin:
+      number: D2
+      mode: INPUT_PULLUP
+      inverted: True
+    name: ${upper_devicename} Reset Rechts
+    filters:
+      - delayed_on: 10ms
+    on_click:
+      - min_length: 20ms
+        max_length: 500ms
+        then:
+          - homeassistant.service:
+              service: counter.increment
+              data: 
+                entity_id: counter.teller_langgeleden_rechts
+      - min_length: 2s
+        max_length: 5s
+        then:
+          - homeassistant.service:
+              service: counter.reset
+              data: 
+                entity_id: counter.teller_langgeleden_rechts
+
+  - platform: gpio
+    pin:
+      number: D3
+      mode: INPUT_PULLUP
+      inverted: True
+    name: Lang geleden Switch Mode
+    filters:
+      - delayed_on: 10ms
+    on_press:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(mode).state < 2;'
+            then:
+              - homeassistant.service:
+                  service: input_number.increment
+                  data: 
+                    entity_id: input_number.teller_lang_geleden_mode
+            else:
+              - homeassistant.service:
+                  service: input_number.set_value
+                  data: 
+                    entity_id: input_number.teller_lang_geleden_mode
+                    value: '0'
+
+
+sensor:
+
+  - platform: homeassistant
+    id: links
+    entity_id: counter.teller_langgeleden_links
+    accuracy_decimals: 0
+
+  - platform: homeassistant
+    id: rechts
+    entity_id: counter.teller_langgeleden_rechts
+    accuracy_decimals: 0
+
+  - platform: homeassistant
+    id: brightness
+    entity_id: input_number.teller_lang_geleden_brightness
+    accuracy_decimals: 0
+
+  - platform: homeassistant
+    id: mode
+    entity_id: input_number.teller_lang_geleden_mode
+    accuracy_decimals: 0
+
+
+spi:
+  clk_pin: D5
+  mosi_pin: D7
+
+
+display:
+
+  - platform: max7219
+    cs_pin: D8
+    num_chips: 2
+    lambda: |-
+      it.set_intensity(id(brightness).state);
+      auto m = (int) id(mode)->state;
+      if (m == 0) {
+        it.printf(1*8+6, "%2.0f", id(links).state);
+        it.printf(0*8+6, "%2.0f", id(rechts).state);
+      } else if (m == 1) {
+        auto time = id(homeassistant_time).now();
+        it.printf(1*8+6, "%02d.", time.hour);
+        it.printf(0*8+6, "%02d", time.minute);
+      }
+

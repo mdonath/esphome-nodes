@@ -1,0 +1,128 @@
+esphome:
+  name: toeter
+  platform: ESP32
+  board: esp-wrover-kit
+
+
+packages:
+  wifi: !include common/wifi.yaml
+  always: !include common/always.yaml
+
+# Enable Home Assistant API
+api:
+
+font:
+  - file: "fonts/Comic Sans MS.ttf"
+    id: my_font
+    size: 20
+
+i2c:
+  sda: 4
+  scl: 15
+
+display:
+  - platform: ssd1306_i2c
+    model: "SSD1306 128x64"
+    reset_pin: 16
+    address: 0x3C
+    lambda: |-
+      it.printf(0,32, id(my_font), "%s", id(sound_sensor).state.c_str());
+
+sensor:
+  - platform: homeassistant
+    id: toeter_sound_duration
+    entity_id: sensor.toeter_sound_duration
+
+text_sensor:
+  - platform: template
+    name: "Toeter sound sensor"
+    id: sound_sensor
+    lambda: |-
+      if (id(sound_1).state) {
+        return {"sound 1"};
+      } else if (id(sound_2).state) {
+        return {"sound 2"};
+      } else if (id(sound_3).state) {
+        return {"sound 3"};
+      } else if (id(sound_4).state) {
+        return {"sound 4"};
+      } else if (id(sound_5).state) {
+        return {"sound 5"};
+      } else if (id(sound_6).state) {
+        return {"sound 6"};
+      }
+      return {"no sound"};
+
+switch:
+  - platform: gpio
+    id: sound_1
+    pin: 17
+    name: "Toeter Sound 1"
+    interlock: &interlock_group [sound_1, sound_2, sound_3, sound_4, sound_5, sound_6]
+    on_turn_on:
+      then:
+        - component.update: sound_sensor
+        - delay:  !lambda |-
+            return id(toeter_sound_duration).state * 1000;
+        - switch.turn_off: sound_1
+        - component.update: sound_sensor
+  - platform: gpio
+    id: sound_2
+    pin: 19
+    name: "Toeter Sound 2"
+    interlock: *interlock_group
+    on_turn_on:
+      then:
+        - component.update: sound_sensor
+        - delay:  !lambda |-
+            return id(toeter_sound_duration).state * 1000;
+        - switch.turn_off: sound_2
+        - component.update: sound_sensor
+  - platform: gpio
+    id: sound_3
+    pin: 27
+    name: "Toeter Sound 3"
+    interlock: *interlock_group
+    on_turn_on:
+      then:
+        - component.update: sound_sensor
+        - delay:  !lambda |-
+            return id(toeter_sound_duration).state * 1000;
+        - switch.turn_off: sound_3
+        - component.update: sound_sensor
+  - platform: gpio
+    id: sound_4
+    pin: 26
+    name: "Toeter Sound 4"
+    interlock: *interlock_group
+    on_turn_on:
+      then:
+        - component.update: sound_sensor
+        - delay:  !lambda |-
+            return id(toeter_sound_duration).state * 1000;
+        - switch.turn_off: sound_4
+        - component.update: sound_sensor
+  - platform: gpio
+    id: sound_5
+    pin: 25
+    name: "Toeter Sound 5"
+    interlock: *interlock_group
+    on_turn_on:
+      then:
+        - component.update: sound_sensor
+        - delay:  !lambda |-
+            return id(toeter_sound_duration).state * 1000;
+        - switch.turn_off: sound_5
+        - component.update: sound_sensor
+  - platform: gpio
+    id: sound_6
+    pin: 33
+    name: "Toeter Sound 6"
+    interlock: *interlock_group
+    on_turn_on:
+      then:
+        - component.update: sound_sensor
+        - delay:  !lambda |-
+            return id(toeter_sound_duration).state * 1000;
+        - switch.turn_off: sound_6
+        - component.update: sound_sensor
