@@ -35,7 +35,7 @@ binary_sensor:
 
   - platform: gpio
     pin:
-      number: D1
+      number: D3
       mode: INPUT_PULLUP
       inverted: True
     name: ${upper_devicename} Reset Links
@@ -59,7 +59,7 @@ binary_sensor:
 
   - platform: gpio
     pin:
-      number: D2
+      number: D1
       mode: INPUT_PULLUP
       inverted: True
     name: ${upper_devicename} Reset Rechts
@@ -83,7 +83,7 @@ binary_sensor:
 
   - platform: gpio
     pin:
-      number: D3
+      number: D2
       mode: INPUT_PULLUP
       inverted: True
     name: Lang geleden Switch Mode
