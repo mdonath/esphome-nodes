@@ -26,7 +26,6 @@ api:
 
 
 time:
-
   - platform: homeassistant
     id: homeassistant_time
 
