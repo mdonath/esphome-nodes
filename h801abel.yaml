@@ -1,0 +1,7 @@
+substitutions:
+  devicename: h801abel
+  friendly_name: H801 Abel
+
+packages:
+  h801: !include common/h801.yaml
+
