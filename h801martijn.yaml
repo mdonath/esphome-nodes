@@ -1,0 +1,40 @@
+substitutions:
+  devicename: h801martijn
+  friendly_name: H801 Martijn
+
+packages:
+  h801: !include common/h801.yaml
+
+logger:
+  level: debug
+
+remote_receiver:
+  pin:
+    number: 3
+    inverted: True
+  dump: all
+  on_sony:
+    then:
+      - lambda: |-
+          if (x.data == 0x000052E9) { // red
+            auto call = id(ledstrip).turn_on();
+            call.set_brightness(1.0);
+            call.set_rgb(1.0, 0.0, 0.0);
+            call.perform();
+          } else if (x.data == 0x000032E9) { // green
+            auto call = id(ledstrip).turn_on();
+            call.set_brightness(1.0);
+            call.set_rgb(0.0, 1.0, 0.0);
+            call.perform();
+          } else if (x.data == 0x000072E9) { // yellow
+            auto call = id(ledstrip).turn_on();
+            call.set_brightness(1.0);
+            call.set_rgb(1.0, 0.5, 0.2);
+            call.perform();
+          } else if (x.data == 0x000012E9) { // blue
+            auto call = id(ledstrip).turn_on();
+            call.set_brightness(1.0);
+            call.set_rgb(0.0, 0.0, 1.0);
+            call.perform();
+          }
+
