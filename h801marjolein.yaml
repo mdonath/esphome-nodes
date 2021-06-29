@@ -4,4 +4,4 @@ substitutions:
 
 packages:
   h801: !include common/h801.yaml
-
+  h801light: !include common/h801-light.yaml

@@ -22,12 +22,3 @@ output:
     pin: 15
     frequency: 1000 Hz
     id: pwm_r
-
-light:
-  - platform: rgb
-    id: ledstrip
-    name: "${friendly_name} Led Strip"
-    red: pwm_r
-    green: pwm_g
-    blue: pwm_b
-

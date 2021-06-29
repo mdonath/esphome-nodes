@@ -2,39 +2,117 @@ substitutions:
   devicename: h801martijn
   friendly_name: H801 Martijn
 
+esphome:
+  includes:
+    - common/light_functions.h
+    - remotes/remote_grundig.h
+
 packages:
   h801: !include common/h801.yaml
 
-logger:
-  level: debug
+
+light:
+  - platform: rgb
+    id: ledstrip
+    name: "${friendly_name} Led Strip"
+    red: pwm_r
+    green: pwm_g
+    blue: pwm_b
+    effects:
+      - strobe:
+          name: Flash van Ledstrip
+          colors:
+            - state: True
+              brightness: 100%
+              red: 100%
+              green: 0%
+              blue: 0%
+              duration: 500ms
+            - state: False
+              duration: 500ms
+            - state: True
+              brightness: 100%
+              red: 0%
+              green: 100%
+              blue: 0%
+              duration: 500ms
+            - state: False
+              duration: 500ms
+            - state: True
+              brightness: 100%
+              red: 0%
+              green: 0%
+              blue: 100%
+              duration: 500ms
+            - state: False
+              duration: 500ms
+
+      - random
+      - pulse
+      - flicker
 
 remote_receiver:
   pin:
     number: 3
     inverted: True
-  dump: all
-  on_sony:
+  on_panasonic:
     then:
       - lambda: |-
-          if (x.data == 0x000052E9) { // red
-            auto call = id(ledstrip).turn_on();
-            call.set_brightness(1.0);
-            call.set_rgb(1.0, 0.0, 0.0);
-            call.perform();
-          } else if (x.data == 0x000032E9) { // green
-            auto call = id(ledstrip).turn_on();
-            call.set_brightness(1.0);
-            call.set_rgb(0.0, 1.0, 0.0);
-            call.perform();
-          } else if (x.data == 0x000072E9) { // yellow
-            auto call = id(ledstrip).turn_on();
-            call.set_brightness(1.0);
-            call.set_rgb(1.0, 0.5, 0.2);
-            call.perform();
-          } else if (x.data == 0x000012E9) { // blue
-            auto call = id(ledstrip).turn_on();
-            call.set_brightness(1.0);
-            call.set_rgb(0.0, 0.0, 1.0);
-            call.perform();
-          }
+          if (x.command == BRIGHT_UP) {
+            dim_relative(id(ledstrip), +0.1);
+          } else if (x.command == BRIGHT_DOWN) {
+            dim_relative(id(ledstrip), -0.1);
 
+          } else if (x.command == POWER_ON) {
+            auto call = id(ledstrip).toggle();
+            call.perform();
+          } else if (x.command == POWER_OFF) {
+            auto call = id(ledstrip).toggle();
+            call.perform();
+
+          } else if (x.command == COLOR_RED1) {
+            set_color(id(ledstrip), 1.0, 0.00, 0.0);
+          } else if (x.command == COLOR_RED2) {
+            set_color(id(ledstrip), 1.0, 0.25, 0.0);
+          } else if (x.command == COLOR_RED3) {
+            set_color(id(ledstrip), 1.0, 0.50, 0.0);
+          } else if (x.command == COLOR_RED4) {
+            set_color(id(ledstrip), 1.0, 0.75, 0.0);
+          } else if (x.command == COLOR_RED5) {
+            set_color(id(ledstrip), 1.0, 1.00, 0.0);
+
+          } else if (x.command == COLOR_GREEN1) {
+            set_color(id(ledstrip), 0.0, 1.0, 0.00);
+          } else if (x.command == COLOR_GREEN2) {
+            set_color(id(ledstrip), 0.0, 1.0, 0.25);
+          } else if (x.command == COLOR_GREEN3) {
+            set_color(id(ledstrip), 0.0, 1.0, 0.50);
+          } else if (x.command == COLOR_GREEN4) {
+            set_color(id(ledstrip), 0.0, 1.0, 0.75);
+          } else if (x.command == COLOR_GREEN5) {
+            set_color(id(ledstrip), 0.0, 1.0, 1.00);
+
+          } else if (x.command == COLOR_BLUE1) {
+            set_color(id(ledstrip), 0.00, 0.0, 1.0);
+          } else if (x.command == COLOR_BLUE2) {
+            set_color(id(ledstrip), 0.25, 0.0, 1.0);
+          } else if (x.command == COLOR_BLUE3) {
+            set_color(id(ledstrip), 0.50, 0.0, 1.0);
+          } else if (x.command == COLOR_BLUE4) {
+            set_color(id(ledstrip), 0.75, 0.0, 1.0);
+          } else if (x.command == COLOR_BLUE5) {
+            set_color(id(ledstrip), 1.0, 0.0, 1.0);
+
+          } else if (x.command == COLOR_WHITE) {
+            set_color(id(ledstrip), 1.0, 1.0, 1.0);
+          
+          } else if (x.command == ACTION_FLASH) {
+            set_effect(id(ledstrip), "Flash van Ledstrip");
+          } else if (x.command == ACTION_STROBE) {
+            set_effect(id(ledstrip), "flicker");
+          } else if (x.command == ACTION_FADE) {
+            set_effect(id(ledstrip), "random");
+          } else if (x.command == ACTION_SMOOTH) {
+            set_effect(id(ledstrip), "pulse");
+
+          }
