@@ -4,5 +4,6 @@
 !common
 !remotes
 !*.yaml
+!*.h
 !.gitignore
 /secrets.yaml
