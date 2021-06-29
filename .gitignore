@@ -2,6 +2,7 @@
 *
 */*
 !common
+!remotes
 !*.yaml
 !.gitignore
 /secrets.yaml
