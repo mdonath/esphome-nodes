@@ -1,0 +1,29 @@
+esphome:
+  name: countdown
+  platform: ESP8266
+  board: d1_mini
+
+packages:
+  wifi: !include common/wifi.yaml
+  always: !include common/always.yaml
+  mqtt: !include common/mqtt.yaml
+
+api:
+
+time:
+  - platform: homeassistant
+    id: hass_time
+
+spi:
+  clk_pin: D5
+  mosi_pin: D7
+  
+  
+display:
+  - platform: max7219digit
+    id: ticker_display
+    cs_pin: D8
+    num_chips: 2
+    intensity: 8
+    lambda: |-
+      it.print("01234567");
