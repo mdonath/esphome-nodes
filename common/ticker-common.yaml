@@ -1,13 +1,3 @@
-#
-# TODO
-#
-# - 
-#
-
-substitutions:
-  devicename: ticker
-  friendly_name: Ticker
-
 
 globals:
   - id: display_page
@@ -33,10 +23,10 @@ esphome:
 
 
 packages:
-  always: !include common/always.yaml
-  wifi: !include common/wifi.yaml
-  mqtt: !include common/mqtt.yaml
-
+  always: !include always.yaml
+  wifi: !include wifi.yaml
+  mqtt: !include mqtt.yaml
+  hardware: !include ticker-hardware.yaml
 
 api:
   services:
@@ -57,147 +47,6 @@ api:
           value: !lambda 'return page;'
       - component.update: ticker_display
 
-spi:
-  clk_pin: D5
-  mosi_pin: D7
-
-output:
-  - platform: esp8266_pwm
-    id: buzzer
-    pin: D1
-
-rtttl:
-  output: buzzer
-
-
-display:
-  - platform: max7219digit
-    id: ticker_display
-    cs_pin: D8
-    num_chips: 4
-    rotate_chip: 180
-    reverse_enable: True
-    intensity: 8
-    lambda: |-
-      it.intensity(id(brightness).state);
-      if (id(display_page) == 0) {
-        it.turn_on_off(false);
-
-      } else if (id(display_page) == 1) {
-        it.turn_on_off(true);
-        it.strftime(5, 0, id(font_mojang), "%H:%M", id(hass_time).now());
-        it.line(0,0, (id(person_martijn).state == "home") ? 2 : 0,0);
-        it.line(0,2, (id(person_veerle).state == "home") ? 2 : 0,2);
-        it.line(0,4, (id(person_marjolein).state == "home") ? 2 : 0,4);
-        it.line(0,6, (id(person_abel).state == "home") ? 2 : 0,6);
-
-      } else if (id(display_page) == 2) {
-        it.turn_on_off(true);
-        it.printf(0,0, id(font_press), id(text).state.c_str());
-        it.scroll(true, id(scroll_mode).state, id(scroll_speed).state, id(scroll_delay).state, id(scroll_dwell).state);
-
-      } else if (id(display_page) == 3) {
-        it.turn_on_off(true);
-        it.printf(33,0, id(font_press), TextAlign::TOP_RIGHT, "%.0f", id(current_power_usage).state);
-
-      } else if (id(display_page) == 4) {
-        it.turn_on_off(true);
-        it.printf(0,0, id(font_press), TextAlign::TOP_LEFT, "%s...", id(feed_nunl).state.c_str());
-        it.scroll(true, id(scroll_mode).state, id(scroll_speed).state, id(scroll_delay).state, id(scroll_dwell).state);
-      }
-
-
-font:
-  - file: "fonts/Mojang-Regular.ttf"
-    id: font_mojang
-    size: 8
-    glyphs:
-      - '0'
-      - '1'
-      - '2'
-      - '3'
-      - '4'
-      - '5'
-      - '6'
-      - '7'
-      - '8'
-      - '9'
-      - ':'
-  - file: "fonts/PressStart2P.ttf"
-    id: font_press
-    size: 8
-    glyphs:
-    - \'
-    - ';'
-    - ':'
-    - '.'
-    - ','
-    - '!'
-    - '?'
-    - '"'
-    - ' '
-    - '0'
-    - '1'
-    - '2'
-    - '3'
-    - '4'
-    - '5'
-    - '6'
-    - '7'
-    - '8'
-    - '9'
-    - a
-    - b
-    - c
-    - d
-    - e
-    - f
-    - g
-    - h
-    - i
-    - j
-    - k
-    - l
-    - m
-    - n
-    - o
-    - p
-    - q
-    - r
-    - s
-    - t
-    - u
-    - v
-    - w
-    - x
-    - y
-    - z
-    - A
-    - B
-    - C
-    - D
-    - E
-    - F
-    - G
-    - H
-    - I
-    - J
-    - K
-    - L
-    - M
-    - N
-    - O
-    - P
-    - Q
-    - R
-    - S
-    - T
-    - U
-    - V
-    - W
-    - X
-    - Y
-    - Z
 
 time:
   - platform: homeassistant
@@ -207,7 +56,7 @@ time:
 text_sensor:
   - platform: homeassistant
     id: text
-    entity_id: input_text.ticker_text
+    entity_id: input_text.${devicename}_text
   - platform: mqtt_subscribe
     id: feed_nunl
     internal: True
@@ -235,51 +84,29 @@ sensor:
   - platform: homeassistant
     id: brightness
     name: ${friendly_name} Brightness
-    entity_id: input_number.ticker_brightness
+    entity_id: input_number.${devicename}_brightness
     accuracy_decimals: 0
   - platform: homeassistant
     id: scroll_mode
     name: ${friendly_name} Scroll Mode
-    entity_id: input_number.ticker_scroll_mode
+    entity_id: input_number.${devicename}_scroll_mode
     accuracy_decimals: 0
   - platform: homeassistant
     id: scroll_speed
     name: ${friendly_name} Scroll Speed
-    entity_id: input_number.ticker_scroll_speed
+    entity_id: input_number.${devicename}_scroll_speed
     accuracy_decimals: 0
   - platform: homeassistant
     id: scroll_delay
     name: ${friendly_name} Scroll Delay
-    entity_id: input_number.ticker_scroll_delay
+    entity_id: input_number.${devicename}_scroll_delay
     accuracy_decimals: 0
   - platform: homeassistant
     id: scroll_dwell
     name: ${friendly_name} Scroll Dwell
-    entity_id: input_number.ticker_scroll_dwell
+    entity_id: input_number.${devicename}_scroll_dwell
     accuracy_decimals: 0
 
-
-binary_sensor:
-  - platform: gpio
-    id: red_button
-    name: ${friendly_name} Red Button
-    pin:
-      number: D3
-      mode: INPUT_PULLUP
-      inverted: True
-    on_click:
-      then:
-        - script.execute: display_next_page
-  - platform: gpio
-    id: green_button
-    name: ${friendly_name} Green Button
-    pin:
-      number: D4
-      mode: INPUT_PULLUP
-      inverted: True
-    on_click:
-      then:
-        - rtttl.play: "success:d=24,o=5,b=100:c,g,b"
 
 switch:
   - platform: template

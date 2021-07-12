@@ -1,0 +1,7 @@
+
+substitutions:
+  devicename: ticker_3
+  friendly_name: Ticker 3
+
+packages:
+  ticker: !include common/ticker-common.yaml
