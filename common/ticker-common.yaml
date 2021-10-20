@@ -4,6 +4,10 @@ globals:
     type: int
     restore_value: no
     initial_value: '1'
+  - id: text_alert
+    type: std::string
+    restore_value: no
+    initial_value: '0'
 
 
 esphome:
@@ -46,7 +50,12 @@ api:
           id: display_page
           value: !lambda 'return page;'
       - component.update: ticker_display
-
+  - service: alert
+    variables:
+      text: string
+      sound: bool
+    then:
+      - script.execute: display_alert
 
 time:
   - platform: homeassistant
@@ -57,11 +66,6 @@ text_sensor:
   - platform: homeassistant
     id: text
     entity_id: input_text.${devicename}_text
-  - platform: mqtt_subscribe
-    id: feed_nunl
-    internal: True
-    name: "News Feed"
-    topic: display/info/feed_nunl
   - platform: homeassistant
     id: person_martijn
     entity_id: person.martijn_donath
@@ -181,3 +185,6 @@ script:
                 id: display_page
                 value: '3'
             - component.update: ticker_display
+  - id: display_alert
+    then:
+      - logger.log: "ALERT!"
