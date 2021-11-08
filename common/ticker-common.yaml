@@ -4,10 +4,6 @@ globals:
     type: int
     restore_value: no
     initial_value: '1'
-  - id: text_alert
-    type: std::string
-    restore_value: no
-    initial_value: '0'
 
 
 esphome:
@@ -78,7 +74,6 @@ text_sensor:
   - platform: homeassistant
     id: person_abel
     entity_id: person.abel
-
 
 sensor:
   - platform: homeassistant

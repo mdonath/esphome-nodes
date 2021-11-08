@@ -44,7 +44,7 @@ display:
 
       } else if (id(display_page) == 4) {
         it.turn_on_off(true);
-        it.printf(0,0, id(font_press), TextAlign::TOP_LEFT, "%s...", id(text_alert).c_str());
+        // it.printf(0,0, id(font_press), TextAlign::TOP_LEFT, "%s...", id(text_alert).c_str());
         it.scroll(true, id(scroll_mode).state, id(scroll_speed).state, id(scroll_delay).state, id(scroll_dwell).state);
       }
 
@@ -148,7 +148,7 @@ binary_sensor:
     name: ${friendly_name} Right Button
     pin:
       number: D3
-      mode: INPUT_PULLUP
+      # mode: INPUT_PULLUP
       inverted: True
     on_click:
       then:

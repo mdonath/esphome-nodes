@@ -1,29 +1,195 @@
+substitutions:
+  devicename: countdown
+  friendly_name: Countdown
+  page_option_1: "Datetime"
+  page_option_2: "Timestamp"
+  page_option_3: "Countdown"
+  page_option_4: "Unused"
+
 esphome:
-  name: countdown
+  name: ${devicename}
   platform: ESP8266
   board: d1_mini
+  includes:
+    - common/time_functions.h
+  on_boot:
+    priority: -10
+    then:
+      - wait_until:
+          api.connected:
+      - wait_until:
+          time.has_time:
+
 
 packages:
   wifi: !include common/wifi.yaml
   always: !include common/always.yaml
   mqtt: !include common/mqtt.yaml
 
+
 api:
+
 
 time:
   - platform: homeassistant
     id: hass_time
+
 
 spi:
   clk_pin: D5
   mosi_pin: D7
   
   
+
 display:
-  - platform: max7219digit
-    id: ticker_display
+  - platform: max7219_countdown
+    id: the_display
     cs_pin: D8
     num_chips: 2
     intensity: 8
+    index: [0x0B, 0x0C, 0x0D, 0x0E, 0x0F,   0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A,   0x00, 0x01, 0x02]
     lambda: |-
-      it.print("01234567");
+      auto time = id(hass_time).now();
+      auto page = id(page_select).state;
+      if (page == "${page_option_1}") {
+        // Show current date and time
+        it.printf("%02d-%02d-%04d%d%d.%d.%d.%d.%d",
+          time.day_of_month, time.month, time.year,
+          time.hour / 10, time.hour % 10,
+          time.minute / 10, time.minute % 10,
+          time.second / 10, time.second % 10
+        );
+
+      } else if (page == "${page_option_2}") {
+        // Show seconds since epoch
+        it.printf("%010ld", time.timestamp);
+
+      } else if (page == "${page_option_3}") {
+        // Show seconds to/from target
+        TimeDiffDays difference;
+        calculate_diff(
+          &difference,
+          parse_datestring(id(target).state),
+          time.timestamp
+        );
+
+        it.printf(0, "%3d %s",
+          difference.days,
+          difference.days != 1 ? "dagen" : "dag"
+        );
+        it.printf(10, "%d%d.%d.%d.%d.%d",
+          difference.hours / 10, difference.hours % 10,
+          difference.minutes / 10, difference.minutes % 10,
+          difference.seconds / 10, difference.seconds % 10
+        );
+
+      } else if (page == "${page_option_4}") {
+        // Unused
+        it.print("todo");
+      }
+
+binary_sensor:
+  - platform: gpio
+    id: rotary_button
+    name: ${friendly_name} Rotary Button
+    pin:
+      number: D4
+      mode: INPUT_PULLUP
+      inverted: True
+    on_press:
+      then:
+        - script.execute: next_page
+
+
+sensor:
+  - platform: rotary_encoder
+    id: the_rotary_encoder
+    name: ${friendly_name} Rotary Encoder
+    pin_a: D1
+    pin_b: D2
+    resolution: 2
+    on_clockwise:
+      - logger.log: "Turned Clockwise"
+      - script.execute: increase
+    on_anticlockwise:
+      - logger.log: "Turned Anticlockwise"
+      - script.execute: decrease
+
+
+text_sensor:
+  - platform: homeassistant
+    id: target
+    entity_id: input_datetime.${devicename}_target
+    on_value:
+      then:
+        - logger.log:
+            format: "Setting new target %s"
+            args: [x.c_str()]
+
+
+number:
+  - platform: template
+    id: brightness_select
+    name: ${friendly_name} Brightness
+    optimistic: true
+    min_value: 0
+    max_value: 15
+    step: 1
+    set_action:
+      - then:
+        - lambda: |-
+            id(the_display).set_intensity(int(x));
+
+
+select:
+  - platform: template
+    id: page_select
+    name: ${friendly_name} Page
+    optimistic: true
+    options:
+      - "${page_option_1}"
+      - "${page_option_2}"
+      - "${page_option_3}"
+      - "${page_option_4}"
+    initial_option: "${page_option_1}"
+
+
+script:
+  - id: next_page
+    then:
+      - logger.log: "Next Page"
+      - lambda: |-
+          auto page = id(page_select).state;
+          auto call = id(page_select).make_call();
+          if (page == "${page_option_1}") {
+            call.set_option("${page_option_2}");
+          } else if (page == "${page_option_2}") {
+            call.set_option("${page_option_3}");
+          } else if (page == "${page_option_3}") {
+            call.set_option("${page_option_4}");
+          } else if (page == "${page_option_4}") {
+            call.set_option("${page_option_1}");
+          }
+          call.perform();
+
+  - id: increase
+    then:
+      - logger.log: "Increase"
+      - if:
+          condition:
+            lambda: 'return id(page_select).state == "${page_option_1}";'
+          then:
+            - number.set:
+                id: brightness_select
+                value: 15
+
+  - id: decrease
+    then:
+      - logger.log: "Decrease"
+      - if:
+          condition:
+            lambda: 'return id(page_select).state == "${page_option_1}";'
+          then:
+            - number.set:
+                id: brightness_select
+                value: 0
