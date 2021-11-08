@@ -2,6 +2,7 @@
 *
 */*
 !common
+!custom_components
 !remotes
 !*.yaml
 !*.h
