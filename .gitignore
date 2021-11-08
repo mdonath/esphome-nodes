@@ -4,6 +4,9 @@
 !common
 !custom_components
 !custom_components/*
+!custom_components/**/*.cpp
+!custom_components/**/*.h
+!custom_components/**/*.py
 !remotes
 !*.yaml
 !*.h
