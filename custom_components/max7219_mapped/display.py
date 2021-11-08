@@ -8,17 +8,17 @@ from esphome.const import CONF_ID, CONF_INTENSITY, CONF_LAMBDA, CONF_NUM_CHIPS, 
 DEPENDENCIES = ["spi"]
 
 max7219_ns = cg.esphome_ns.namespace("max7219")
-MAX7219CountdownComponent = max7219_ns.class_(
-    "MAX7219CountdownComponent", cg.PollingComponent, spi.SPIDevice
+MAX7219MappedComponent = max7219_ns.class_(
+    "MAX7219MappedComponent", cg.PollingComponent, spi.SPIDevice
 )
-MAX7219CountdownComponentRef = MAX7219CountdownComponent.operator("ref")
+MAX7219MappedComponentRef = MAX7219MappedComponent.operator("ref")
 
 CONF_REVERSE_ENABLE = "reverse_enable"
 
 CONFIG_SCHEMA = (
     display.BASIC_DISPLAY_SCHEMA.extend(
         {
-            cv.GenerateID(): cv.declare_id(MAX7219CountdownComponent),
+            cv.GenerateID(): cv.declare_id(MAX7219MappedComponent),
             cv.Optional(CONF_NUM_CHIPS, default=1): cv.int_range(min=1, max=255),
             cv.Optional(CONF_INTENSITY, default=15): cv.int_range(min=0, max=15),
             cv.Optional(CONF_REVERSE_ENABLE, default=False): cv.boolean,
@@ -44,6 +44,6 @@ async def to_code(config):
 
     if CONF_LAMBDA in config:
         lambda_ = await cg.process_lambda(
-            config[CONF_LAMBDA], [(MAX7219CountdownComponentRef, "it")], return_type=cg.void
+            config[CONF_LAMBDA], [(MAX7219MappedComponentRef, "it")], return_type=cg.void
         )
         cg.add(var.set_writer(lambda_))

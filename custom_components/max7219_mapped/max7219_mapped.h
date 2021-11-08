@@ -12,17 +12,17 @@
 namespace esphome {
 namespace max7219 {
  
-class MAX7219CountdownComponent;
+class MAX7219MappedComponent;
  
-using max7219countdown_writer_t = std::function<void(MAX7219CountdownComponent &)>;
+using max7219mapped_writer_t = std::function<void(MAX7219MappedComponent &)>;
  
- class MAX7219CountdownComponent : public PollingComponent,
-                                   public spi::SPIDevice<spi::BIT_ORDER_MSB_FIRST, spi::CLOCK_POLARITY_LOW,
-                                                         spi::CLOCK_PHASE_LEADING, spi::DATA_RATE_1MHZ> {
+ class MAX7219MappedComponent : public PollingComponent,
+                                public spi::SPIDevice<spi::BIT_ORDER_MSB_FIRST, spi::CLOCK_POLARITY_LOW,
+                                                      spi::CLOCK_PHASE_LEADING, spi::DATA_RATE_1MHZ> {
   public:
    void set_mapping(std::initializer_list<uint8> mapping);
 
-   void set_writer(max7219countdown_writer_t &&writer);
+   void set_writer(max7219mapped_writer_t &&writer);
  
    void setup() override;
  
@@ -58,7 +58,7 @@ using max7219countdown_writer_t = std::function<void(MAX7219CountdownComponent &
    uint8_t num_chips_{1};
    uint8_t *buffer_;
    bool reverse_{false};
-   optional<max7219countdown_writer_t> writer_{};
+   optional<max7219mapped_writer_t> writer_{};
    bool has_map_{false};
    uint8_t map_[16];
  };

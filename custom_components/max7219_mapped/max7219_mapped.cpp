@@ -1,4 +1,4 @@
-#include "max7219_countdown.h"
+#include "max7219_mapped.h"
 #include "esphome/core/log.h"
 #include "esphome/core/helpers.h"
 #include "esphome/core/hal.h"
@@ -114,8 +114,8 @@ const uint8_t MAX7219_ASCII_TO_RAW[95] PROGMEM = {
     0b01100011,            // '~', ord 0x7E (degree symbol)
 };
  
-float MAX7219CountdownComponent::get_setup_priority() const { return setup_priority::PROCESSOR; }
-void MAX7219CountdownComponent::setup() {
+float MAX7219MappedComponent::get_setup_priority() const { return setup_priority::PROCESSOR; }
+void MAX7219MappedComponent::setup() {
     ESP_LOGCONFIG(TAG, "Setting up MAX7219...");
     this->spi_setup();
     this->buffer_ = new uint8_t[this->num_chips_ * 8];  // NOLINT
@@ -132,7 +132,7 @@ void MAX7219CountdownComponent::setup() {
     this->send_to_all_(MAX7219_REGISTER_TEST, 0);
     this->send_to_all_(MAX7219_REGISTER_SHUTDOWN, 1);
 }
-void MAX7219CountdownComponent::dump_config() {
+void MAX7219MappedComponent::dump_config() {
     ESP_LOGCONFIG(TAG, "MAX7219:");
     ESP_LOGCONFIG(TAG, "  Number of Chips: %u", this->num_chips_);
     ESP_LOGCONFIG(TAG, "  Intensity: %u", this->intensity_);
@@ -140,12 +140,12 @@ void MAX7219CountdownComponent::dump_config() {
     LOG_UPDATE_INTERVAL(this);
 }
 
-void MAX7219CountdownComponent::set_mapping(std::initializer_list<uint8> mapping) {
+void MAX7219MappedComponent::set_mapping(std::initializer_list<uint8> mapping) {
     std::copy(mapping.begin(), mapping.end(), this->map_);
     this->has_map_ = true;
 }
 
-void MAX7219CountdownComponent::display() {
+void MAX7219MappedComponent::display() {
     for (uint8_t i = 0; i < 8; i++) {
         this->enable();
         for (uint8_t j = 0; j < this->num_chips_; j++)
@@ -156,17 +156,17 @@ void MAX7219CountdownComponent::display() {
         this->disable();
     }
 }
-void MAX7219CountdownComponent::send_byte_(uint8_t a_register, uint8_t data) {
+void MAX7219MappedComponent::send_byte_(uint8_t a_register, uint8_t data) {
     this->write_byte(a_register);
     this->write_byte(data);
 }
-void MAX7219CountdownComponent::send_to_all_(uint8_t a_register, uint8_t data) {
+void MAX7219MappedComponent::send_to_all_(uint8_t a_register, uint8_t data) {
     this->enable();
     for (uint8_t i = 0; i < this->num_chips_; i++)
         this->send_byte_(a_register, data);
     this->disable();
 }
-void MAX7219CountdownComponent::update() {
+void MAX7219MappedComponent::update() {
     for (uint8_t i = 0; i < this->num_chips_ * 8; i++)
         this->buffer_[i] = 0;
     if (this->writer_.has_value())
@@ -174,7 +174,7 @@ void MAX7219CountdownComponent::update() {
     this->display();
 }
 
-uint8_t MAX7219CountdownComponent::print(uint8_t start_pos, const char *str) {
+uint8_t MAX7219MappedComponent::print(uint8_t start_pos, const char *str) {
     uint8_t pos = start_pos;
     for (; *str != '\0'; str++) {
         uint8_t data = MAX7219_UNKNOWN_CHAR;
@@ -199,8 +199,8 @@ uint8_t MAX7219CountdownComponent::print(uint8_t start_pos, const char *str) {
     return pos - start_pos;
  }
 
-uint8_t MAX7219CountdownComponent::print(const char *str) { return this->print(0, str); }
-uint8_t MAX7219CountdownComponent::printf(uint8_t pos, const char *format, ...) {
+uint8_t MAX7219MappedComponent::print(const char *str) { return this->print(0, str); }
+uint8_t MAX7219MappedComponent::printf(uint8_t pos, const char *format, ...) {
     va_list arg;
     va_start(arg, format);
     char buffer[64];
@@ -211,7 +211,7 @@ uint8_t MAX7219CountdownComponent::printf(uint8_t pos, const char *format, ...) 
     return 0;
  }
 
-uint8_t MAX7219CountdownComponent::printf(const char *format, ...) {
+uint8_t MAX7219MappedComponent::printf(const char *format, ...) {
     va_list arg;
     va_start(arg, format);
     char buffer[64];
@@ -221,23 +221,23 @@ uint8_t MAX7219CountdownComponent::printf(const char *format, ...) {
         return this->print(buffer);
     return 0;
 }
-void MAX7219CountdownComponent::set_writer(max7219countdown_writer_t &&writer) { this->writer_ = writer; }
+void MAX7219MappedComponent::set_writer(max7219mapped_writer_t &&writer) { this->writer_ = writer; }
 
-void MAX7219CountdownComponent::set_intensity(uint8_t intensity) {
+void MAX7219MappedComponent::set_intensity(uint8_t intensity) {
     this->intensity_ = intensity;
     this->send_to_all_(MAX7219_REGISTER_INTENSITY, this->intensity_);
 }
-void MAX7219CountdownComponent::set_num_chips(uint8_t num_chips) { this->num_chips_ = num_chips; }
+void MAX7219MappedComponent::set_num_chips(uint8_t num_chips) { this->num_chips_ = num_chips; }
  
 #ifdef USE_TIME
-uint8_t MAX7219CountdownComponent::strftime(uint8_t pos, const char *format, time::ESPTime time) {
+uint8_t MAX7219MappedComponent::strftime(uint8_t pos, const char *format, time::ESPTime time) {
     char buffer[64];
     size_t ret = time.strftime(buffer, sizeof(buffer), format);
     if (ret > 0)
         return this->print(pos, buffer);
     return 0;
 }
-uint8_t MAX7219CountdownComponent::strftime(const char *format, time::ESPTime time) { return this->strftime(0, format, time); }
+uint8_t MAX7219MappedComponent::strftime(const char *format, time::ESPTime time) { return this->strftime(0, format, time); }
 #endif
  
 }  // namespace max7219

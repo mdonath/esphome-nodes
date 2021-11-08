@@ -42,7 +42,7 @@ spi:
   
 
 display:
-  - platform: max7219_countdown
+  - platform: max7219_mapped
     id: the_display
     cs_pin: D8
     num_chips: 2
