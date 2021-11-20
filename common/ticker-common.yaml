@@ -74,12 +74,24 @@ text_sensor:
   - platform: homeassistant
     id: person_abel
     entity_id: person.abel
+  - platform: homeassistant
+    id: internet_abel
+    internal: True
+    entity_id: group.internet_devices_abel
+  - platform: homeassistant
+    id: internet_marjolein
+    internal: True
+    entity_id: group.internet_devices_marjolein
+  - platform: homeassistant
+    id: internet_veerle
+    internal: True
+    entity_id: group.internet_devices_veerle
 
 sensor:
   - platform: homeassistant
     id: current_power_usage
     internal: True
-    entity_id: sensor.energy_power_current_usage
+    entity_id: sensor.power_consumption
   - platform: homeassistant
     id: brightness
     name: ${friendly_name} Brightness
@@ -105,7 +117,6 @@ sensor:
     name: ${friendly_name} Scroll Dwell
     entity_id: input_number.${devicename}_scroll_dwell
     accuracy_decimals: 0
-
 
 switch:
   - platform: template
@@ -183,3 +194,22 @@ script:
   - id: display_alert
     then:
       - logger.log: "ALERT!"
+  - id: action_button
+    then:
+      - if:
+          condition:
+            lambda: 'return id(display_page) == 1;'
+          then:
+            - lambda: |-
+                id(brightness).publish_state(0);
+            
+      - if:
+          condition:
+            lambda: 'return id(display_page) == 2;'
+          then:
+            - rtttl.play: "success:d=24,o=5,b=100:c,c,c"
+            - homeassistant.service:
+                service: light.turn_on
+                data:
+                  entity_id: light.h801_abel_led_strip
+                  effect: Flash van Ledstrip

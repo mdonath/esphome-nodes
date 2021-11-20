@@ -1,13 +1,8 @@
 substitutions:
   devicename: langgeleden
-  upper_devicename: Lang Geleden
-
-
-globals:
-  - id: global_modus
-    type: int
-    restore_value: no
-    initial_value: '0'
+  friendly_name: Lang Geleden
+  option_mode_1: Tellers
+  option_mode_2: Tijd
 
 
 packages:
@@ -35,98 +30,78 @@ binary_sensor:
   - platform: gpio
     pin:
       number: D3
-      mode: INPUT_PULLUP
       inverted: True
-    name: ${upper_devicename} Reset Links
+    name: ${friendly_name} Knop Links
     filters:
       - delayed_on: 10ms
     on_click:
       - min_length: 20ms
         max_length: 500ms
         then:
-          - homeassistant.service:
-              service: counter.increment
-              data: 
-                entity_id: counter.teller_langgeleden_links
+          - script.execute: increment_links
       - min_length: 2s
         max_length: 5s
         then:
-          - homeassistant.service:
-              service: counter.reset
-              data: 
-                entity_id: counter.teller_langgeleden_links
+          - script.execute: reset_links
 
   - platform: gpio
     pin:
       number: D1
       mode: INPUT_PULLUP
       inverted: True
-    name: ${upper_devicename} Reset Rechts
+    name: ${friendly_name} Knop Rechts
     filters:
       - delayed_on: 10ms
     on_click:
       - min_length: 20ms
         max_length: 500ms
         then:
-          - homeassistant.service:
-              service: counter.increment
-              data: 
-                entity_id: counter.teller_langgeleden_rechts
+          - script.execute: increment_rechts
       - min_length: 2s
         max_length: 5s
         then:
-          - homeassistant.service:
-              service: counter.reset
-              data: 
-                entity_id: counter.teller_langgeleden_rechts
+          - script.execute: reset_rechts
 
   - platform: gpio
     pin:
       number: D2
       mode: INPUT_PULLUP
       inverted: True
-    name: Lang geleden Switch Mode
+    name: ${friendly_name} Schakel Modus
     filters:
       - delayed_on: 10ms
     on_press:
       then:
-        - if:
-            condition:
-              lambda: 'return id(mode).state < 2;'
-            then:
-              - homeassistant.service:
-                  service: input_number.increment
-                  data: 
-                    entity_id: input_number.teller_lang_geleden_mode
-            else:
-              - homeassistant.service:
-                  service: input_number.set_value
-                  data: 
-                    entity_id: input_number.teller_lang_geleden_mode
-                    value: '0'
+        - script.execute: next_page
 
 
 sensor:
 
   - platform: homeassistant
     id: links
-    entity_id: counter.teller_langgeleden_links
+    entity_id: counter.${devicename}_teller_links
     accuracy_decimals: 0
 
   - platform: homeassistant
     id: rechts
-    entity_id: counter.teller_langgeleden_rechts
+    entity_id: counter.${devicename}_teller_rechts
     accuracy_decimals: 0
 
   - platform: homeassistant
     id: brightness
-    entity_id: input_number.teller_lang_geleden_brightness
+    entity_id: input_number.${devicename}_brightness
     accuracy_decimals: 0
 
-  - platform: homeassistant
-    id: mode
-    entity_id: input_number.teller_lang_geleden_mode
-    accuracy_decimals: 0
+
+select:
+  - platform: template
+    id: page_select
+    name: ${friendly_name} Modus
+    optimistic: true
+    options:
+      - "${option_mode_1}"
+      - "${option_mode_2}"
+    initial_option: "${option_mode_1}"
 
 
 spi:
@@ -135,19 +110,65 @@ spi:
 
 
 display:
-
   - platform: max7219
     cs_pin: D8
     num_chips: 2
     lambda: |-
       it.set_intensity(id(brightness).state);
-      auto m = (int) id(mode)->state;
-      if (m == 0) {
+      
+      if (id(page_select).state == "${option_mode_1}") {
         it.printf(1*8+6, "%2.0f", id(links).state);
         it.printf(0*8+6, "%2.0f", id(rechts).state);
-      } else if (m == 1) {
+      } else if (id(page_select).state == "${option_mode_2}") {
         auto time = id(homeassistant_time).now();
         it.printf(1*8+6, "%02d.", time.hour);
         it.printf(0*8+6, "%02d", time.minute);
       }
+
+
+script:
+  - id: next_page
+    then:
+      - logger.log: "Next Page"
+      - lambda: |-
+          auto page = id(page_select).state;
+          auto call = id(page_select).make_call();
+          if (page == "${option_mode_1}") {
+            call.set_option("${option_mode_2}");
+          } else if (page == "${option_mode_2}") {
+            call.set_option("${option_mode_1}");
+          }
+          call.perform();
+
+  - id: reset_links
+    then:
+      - logger.log: "Reset Links"
+      - homeassistant.service:
+          service: counter.reset
+          data: 
+            entity_id: counter.${devicename}_teller_links
+
+  - id: increment_links
+    then:
+      - logger.log: "Increment Links"
+      - homeassistant.service:
+          service: counter.increment
+          data: 
+            entity_id: counter.${devicename}_teller_links
+
+  - id: reset_rechts
+    then:
+      - logger.log: "Reset Rechts"
+      - homeassistant.service:
+          service: counter.reset
+          data: 
+            entity_id: counter.${devicename}_teller_rechts
+
+  - id: increment_rechts
+    then:
+      - logger.log: "Increment Rechts"
+      - homeassistant.service:
+          service: counter.increment
+          data: 
+            entity_id: counter.${devicename}_teller_rechts
 
