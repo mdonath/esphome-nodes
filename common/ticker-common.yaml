@@ -135,6 +135,12 @@ switch:
           state: ON
       - script.execute: display_page1
 
+button:
+  - platform: template
+    name: ${friendly_name} Next Page
+    on_press:
+      then:
+        - script.execute: display_next_page
 
 script:
   - id: display_next_page
