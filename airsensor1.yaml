@@ -1,0 +1,29 @@
+substitutions:
+  devicename: air-sensor-1
+  friendly_name: Air Sensor 1
+
+
+packages:
+  wifi: !include common/wifi.yaml
+  always: !include common/always.yaml
+
+esphome:
+  name: ${devicename}
+  platform: ESP8266
+  board: d1_mini
+
+api:
+
+# Ikea Vindriktning PM2.5 sensor
+uart:
+  rx_pin: D2
+  baud_rate: 9600
+
+sensor:
+  - platform: pm1006
+    pm_2_5:
+      name: "Ikea Vindriktning PM25"
+      filters:
+        - sliding_window_moving_average:
+            window_size: 10
+            send_every: 10
