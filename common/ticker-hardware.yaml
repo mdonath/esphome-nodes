@@ -20,6 +20,7 @@ display:
     rotate_chip: 180
     reverse_enable: True
     intensity: 8
+    update_interval: 67ms
     lambda: |-
       it.intensity(id(brightness).state);
       if (id(display_page) == 0) {
@@ -27,7 +28,7 @@ display:
 
       } else if (id(display_page) == 1) {
         it.turn_on_off(true);
-        it.strftime(5, 0, id(font_mojang), "%H:%M", id(hass_time).now());
+        printSlideTime(it, 5, 0, id(hass_time).now());
         it.line(0,0, (id(person_martijn).state == "home") ? 2 : 0,0);
         it.line(0,2, (id(person_veerle).state == "home") ? 2 : 0,2);
         it.line(0,4, (id(person_marjolein).state == "home") ? 2 : 0,4);
@@ -44,15 +45,37 @@ display:
 
       } else if (id(display_page) == 2) {
         it.turn_on_off(true);
+        printSlideFormatWithFont(it, 0, 0, "%H|%M|%S", id(hass_time).now(), 4);
+
+      } else if (id(display_page) == 3) {
+        it.turn_on_off(true);
+        printSlideFormatWithFont(it, 4, 0, "%H:%M:%S", id(hass_time).now(), 3);
+        
+        it.line(0,0, (id(person_martijn).state == "home") ? 2 : 0,0);
+        it.line(0,2, (id(person_veerle).state == "home") ? 2 : 0,2);
+        it.line(0,4, (id(person_marjolein).state == "home") ? 2 : 0,4);
+        it.line(0,6, (id(person_abel).state == "home") ? 2 : 0,6);
+        if (id(internet_veerle).state == "off") {
+          it.draw_pixel_at(1,2, COLOR_OFF);
+        }
+        if (id(internet_marjolein).state == "off") {
+          it.draw_pixel_at(1,4, COLOR_OFF);
+        }
+        if (id(internet_abel).state == "off") {
+          it.draw_pixel_at(1,6, COLOR_OFF);
+        }
+
+      } else if (id(display_page) == 4) {
+        it.turn_on_off(true);
         it.printf(0,0, id(font_press), id(text).state.c_str());
         auto scrollmode = id(scroll_mode).state == 0 ?  esphome::max7219digit::ScrollMode::CONTINUOUS : esphome::max7219digit::ScrollMode::STOP;
         it.scroll(true, scrollmode, id(scroll_speed).state, id(scroll_delay).state, id(scroll_dwell).state);
 
-      } else if (id(display_page) == 3) {
+      } else if (id(display_page) == 5) {
         it.turn_on_off(true);
         it.printf(33,0, id(font_press), TextAlign::TOP_RIGHT, "%.0f", 1000.0 * id(current_power_usage).state);
 
-      } else if (id(display_page) == 4) {
+      } else if (id(display_page) == 6) {
         it.turn_on_off(true);
         // it.printf(0,0, id(font_press), TextAlign::TOP_LEFT, "%s...", id(text_alert).c_str());
         auto scrollmode = id(scroll_mode).state == 0 ?  esphome::max7219digit::ScrollMode::CONTINUOUS : esphome::max7219digit::ScrollMode::STOP;
