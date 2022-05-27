@@ -4,7 +4,7 @@
 #include "esphome/components/max7219digit/max7219digit.h"
 #include "esphome/components/time/real_time_clock.h"
 #include "esphome/core/color.h"
-#include "slidefont_all.h"
+#include "slidefonts.h"
 
 namespace esphome
 {
@@ -33,7 +33,7 @@ namespace esphome
             int offset;
         };
 
-        uint8_t combine_column_data(uint8_t col_prev, uint8_t col_next, int step, SlideDirection direction, SlideFontType font)
+        uint8_t combine_column_data(uint8_t col_prev, uint8_t col_next, int step, SlideDirection direction, slidefont::SlideFontType font)
         {
             if (direction == SlideDirection::UP)
                 return (col_prev >> step) | col_next << (font.height - step);
@@ -41,7 +41,7 @@ namespace esphome
                 return (col_prev << step) | col_next >> (font.height - step);
         }
 
-        void draw_number_step(MAX7219Component &it, SlideFontType font, int x, int y, slide_animation anim, SlideDirection direction)
+        void draw_number_step(MAX7219Component &it, slidefont::SlideFontType font, int x, int y, slide_animation anim, SlideDirection direction)
         {
             for (auto col = 0; col < font.width; col++)
             {
@@ -63,15 +63,7 @@ namespace esphome
                 return;
 
             // get font data
-            SlideFontType font;
-            if (fontSize == 3)
-                font = font3;
-            else if (fontSize == 4)
-                font = font4;
-            else if (fontSize == 5)
-                font = font5;
-            else
-                return;
+            slidefont::SlideFontType font = slidefont::getFont(fontSize);
 
             // parse string
             std::vector<current_number> current_numbers;

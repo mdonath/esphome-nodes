@@ -22,7 +22,7 @@ esphome:
           state: ON
   includes:
     - common/slideclock.h
-    - common/slidefont_all.h
+    - common/slidefonts.h
 
 packages:
   always: !include always.yaml
@@ -231,15 +231,14 @@ script:
             lambda: 'return id(display_page) == 1;'
           then:
             - lambda: |-
-                id(brightness).publish_state(0);
-            
+                if (id(brightness).state != 0) {
+                  id(brightness).publish_state(0);
+                } else {
+                  id(brightness).publish_state(3);
+                }
       - if:
           condition:
             lambda: 'return id(display_page) == 2;'
           then:
             - rtttl.play: "success:d=24,o=5,b=100:c,c,c"
-            - homeassistant.service:
-                service: light.turn_on
-                data:
-                  entity_id: light.h801_abel_led_strip
-                  effect: Flash van Ledstrip
+            
