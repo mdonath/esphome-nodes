@@ -33,7 +33,7 @@ namespace esphome
             int offset;
         };
 
-        uint8_t combine_column_data(uint8_t col_prev, uint8_t col_next, int step, SlideDirection direction, slidefont::SlideFontType font)
+        uint8_t combine_column_data(const uint8_t col_prev, const uint8_t col_next, const int step, const SlideDirection direction, const slidefont::SlideFontType font)
         {
             if (direction == SlideDirection::UP)
                 return (col_prev >> step) | col_next << (font.height - step);
@@ -41,7 +41,7 @@ namespace esphome
                 return (col_prev << step) | col_next >> (font.height - step);
         }
 
-        void draw_number_step(MAX7219Component &it, slidefont::SlideFontType font, int x, int y, slide_animation anim, SlideDirection direction)
+        void draw_number_step(MAX7219Component &it, const slidefont::SlideFontType font, const int x, const int y, const slide_animation anim, const SlideDirection direction)
         {
             for (auto col = 0; col < font.width; col++)
             {
@@ -111,35 +111,35 @@ namespace esphome
             for (auto num = 0; num < current_size; num++)
             {
                 auto current_number_value = current_numbers[num].value;
-                if (current_number_value != number_animations[num].prev && number_animations[num].frame == 0)
+                auto & anim = number_animations[num];
+                if (current_number_value != anim.prev && anim.frame == 0)
                 {
-                    number_animations[num].frame++;
-                    number_animations[num].next = current_number_value;
+                    anim.frame++;
+                    anim.next = current_number_value;
                 }
 
                 draw_number_step(it,
                                  font,
                                  current_numbers[num].offset,
                                  y,
-                                 number_animations[num],
+                                 anim,
                                  SlideDirection::DOWN);
 
-                if (number_animations[num].frame > 0)
+                if (anim.frame > 0)
                 {
-                    number_animations[num].frame++;
+                    anim.frame++;
 
-                    if (number_animations[num].frame > font.height)
+                    if (anim.frame > font.height)
                     {
-                        number_animations[num].prev = number_animations[num].next;
-                        number_animations[num].frame = 0;
+                        anim.prev = anim.next;
+                        anim.frame = 0;
                     }
                 }
             }
 
             // draw separators
-            for (auto s = 0; s < separators.size(); s++)
+            for (const auto &sep : separators)
             {
-                auto sep = separators[s];
                 if (sep.type == ':')
                 {
                     it.draw_absolute_pixel_internal(sep.offset, 2, Color::WHITE);

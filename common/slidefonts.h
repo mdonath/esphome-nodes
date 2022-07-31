@@ -12,8 +12,19 @@ namespace esphome
             {
                 uint8_t width;
                 uint8_t height;
-                uint8_t data[10][5];
+                uint8_t data[10][7];
             };
+            const SlideFontType pacman PROGMEM = {
+                7,
+                8,
+                {
+                    {0xFE, 0x73, 0xF3, 0x7F, 0xF3, 0x73, 0xFE}, // 0 no eyes
+                    {0xFE, 0x7B, 0xF3, 0x7F, 0xFB, 0x73, 0xFE}, // 1 eyes left-down
+                    {0xFE, 0x77, 0xF3, 0x7F, 0xF7, 0x73, 0xFE}, // 2 eyes left-up
+                    {0xFE, 0x73, 0xFB, 0x7F, 0xF3, 0x7B, 0xFE}, // 3 eyes right-down
+                    {0xFE, 0x73, 0xF7, 0x7F, 0xF3, 0x77, 0xFE}, // 4 eyes right-up
+
+                }};
 
             const SlideFontType font3 PROGMEM = {
                 3,
@@ -71,6 +82,8 @@ namespace esphome
              */
             SlideFontType getFont(int fontSize)
             {
+                if (fontSize == 0)
+                    return pacman;
                 if (fontSize == 3)
                     return font3;
                 if (fontSize == 4)
