@@ -1,25 +1,21 @@
-globals:
-   - id: song_index
-     type: int
-     restore_value: yes
-     initial_value: '1'
-
-
 substitutions:
   devicename: deurbelindicator
   upper_devicename: Deurbel Indicator
-  song_onboot: 'two short:d=4,o=5,b=100:16e6,16e6'
-  song_ateam: 'A-Team:d=8,o=5,b=125:4d#6,a#,2d#6,16p,g#,4a#,4d#.,p,16g,16a#,d#6,a#,f6,2d#6,16p,c#.6,16c6,16a#,g#.,2a#'
-  song_starwars: "StarWars:d=4,o=5,b=45:32p,32f#,32f#,32f#,8b.,8f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32e6,8c#.6,32f#,32f#,32f#,8b.,8f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32e6,8c#6"
-  song_getready: 'Get ready:d=4,o=5,b=125:8g.,8g.,8g,8c,8c,8d,8d,8g.,8g.,8g,8a#,8a#,8c6,8c6,8g.,8g.,8g,8c,8c,8d,8d,8g.,8g.,8g,8a#,8a#,8c6,8d6'
-  song_sweetchild: 'Sweet Child:d=8,o=5,b=140:d,d6,a,g,g6,a,f#6,a,d,d6,a,g,g6,a,f#6,a,e,d6,a,g,g6,a,f#6,a,e,d6,a,g,g6,a,f#6,a'
-  song_lightmyfire: 'LightMyFire:d=4,o=5,b=140:8b,16g,16a,8b,8d6,8c6,8b,8a,8g,8a,16f,16a,8c6,8f6,16d6,16c6,16a#,16g,8g#,8g,8g#,16g,16a,8b,8c#6,16b,16a,16g,16f,8e,8f,1a'
 
   pin_button_red: D1
   pin_button_green: D2
   pin_led_red: D3
   pin_led_green: D4
   pin_buzzer: D8
+
+  song_onboot: 'two short:d=4,o=5,b=100:16e6,16e6'
+  song_phonering: 'Phonering:d=32,o=7,b=200:a,f,a,f,a,f,a,f,a,f,a,f,a,f,a,f,a,p,p,f,a,f,a,f,a,f,a,f,a,f,a,f,a,f,a,f,a,f,a,f,a,f'
+  song_starwars: "StarWars:d=4,o=5,b=45:32p,32f#,32f#,32f#,8b.,8f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32e6,8c#.6,32f#,32f#,32f#,8b.,8f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32c#6,8b.6,16f#.6,32e6,32d#6,32e6,8c#6"
+  song_getready: 'Get ready:d=4,o=5,b=125:8g.,8g.,8g,8c,8c,8d,8d,8g.,8g.,8g,8a#,8a#,8c6,8c6,8g.,8g.,8g,8c,8c,8d,8d,8g.,8g.,8g,8a#,8a#,8c6,8d6'
+  song_sweetchild: 'Sweet Child:d=8,o=5,b=140:d,d6,a,g,g6,a,f#6,a,d,d6,a,g,g6,a,f#6,a,e,d6,a,g,g6,a,f#6,a,e,d6,a,g,g6,a,f#6,a'
+  song_lightmyfire: 'LightMyFire:d=4,o=5,b=140:8b,16g,16a,8b,8d6,8c6,8b,8a,8g,8a,16f,16a,8c6,8f6,16d6,16c6,16a#,16g,8g#,8g,8g#,16g,16a,8b,8c#6,16b,16a,16g,16f,8e,8f,1a'
+  song_equador: 'Equador:d=4,o=5,b=140:8g.,8d.,8a#,8a,8c6,8a,8f,8g.,8d.,8a#,8a,8c6,8a,8f,8a#.,8f.,8d6,8c6,8d6,8c6,8a,8a#.,8g.,8a#,8a,8a#,8a,8f'
+  song_ateam: 'A-Team:d=8,o=5,b=125:4d#6,a#,2d#6,16p,g#,4a#,4d#.,p,16g,16a#,d#6,a#,f6,2d#6,16p,c#.6,16c6,16a#,g#.,2a#'
 
 
 packages:
@@ -55,30 +51,22 @@ esphome:
           rtttl: ${song_onboot}
       - switch.turn_on:
           id: buzzer_enabled
-      - component.update: selected_sound
 
 
-text_sensor:
+select:
   - platform: template
-    id: selected_sound
-    name: ${upper_devicename} Selected Sound
-    update_interval: 1h
-    lambda: |-
-      auto index = id(song_index);
-      if (index == 1) {
-        return {"A-Team"};
-      } else if (index == 2) {
-        return {"Starwars"};
-      } else if (index == 3) {
-        return {"Get Ready"};
-      } else if (index == 4) {
-        return {"Sweet Child"};
-      } else if (index == 5) {
-        return {"Light My Fire"};
-      } else {
-        return {"?"};
-      }
-
+    id: sound_selector
+    name: ${upper_devicename} Sound Selector
+    optimistic: True
+    options:
+      - Phonering
+      - Starwars
+      - Get Ready
+      - Sweet Child
+      - Light My Fire
+      - Equador
+      - A-Team
+        
 
 # Enable Home Assistant API
 api:
@@ -101,7 +89,7 @@ api:
     # Service to stop blinking red LED
     - service: stop_blink_red
       then:
-        - script.execute: stop_blink_green
+        - script.execute: stop_blink_red
 
     # Service to start blinking green LED
     - service: start_blink_green
@@ -117,22 +105,6 @@ api:
     - service: indicate_doorbell
       then:
         - script.execute: indicate_doorbell
-
-    # Service to change Selected Song
-    - service: change_selected_song
-      variables:
-         song_index: int
-      then:
-        - if:
-            condition:
-              lambda: 'return song_index > 0 && song_index < 6;'
-            then:
-              - globals.set:
-                  id: song_index
-                  value: !lambda 'return song_index;'
-              - component.update: selected_sound
-            else:
-              - logger.log: "Invalid Song Index"
 
 
 output:
@@ -172,7 +144,7 @@ light:
     effects:
       - strobe:
       - lambda:
-          name: Sine
+          name: Heartbeat
           update_interval: 75ms
           lambda: |-
             static float t = 0;
@@ -201,12 +173,12 @@ rtttl:
 
 # Define switch to control buzzer from HA
 switch:
-- platform: template
-  name: "${upper_devicename} Sound Enabled"
-  id: buzzer_enabled
-  icon: mdi:volume-high
-  optimistic: true
-  restore_state: true
+  - platform: template
+    name: "${upper_devicename} Sound Enabled"
+    id: buzzer_enabled
+    icon: mdi:volume-high
+    optimistic: true
+    restore_state: true
 
 
 binary_sensor:
@@ -299,20 +271,23 @@ script:
           then:
             - rtttl.play:
                 rtttl: !lambda |-
-                  auto index = id(song_index);
-                  if (index == 1) {
-                    return "${song_ateam}";
-                  } else if (index == 2) {
+                  auto index = id(sound_selector).active_index();
+                  if (index == 0) {
+                    return "${song_phonering}";
+                  } else if (index == 1) {
                     return "${song_starwars}";
-                  } else if (index == 3) {
+                  } else if (index == 2) {
                     return "${song_getready}";
-                  } else if (index == 4) {
+                  } else if (index == 3) {
                     return "${song_sweetchild}";
-                  } else if (index == 5) {
+                  } else if (index == 4) {
                     return "${song_lightmyfire}";
+                  } else if (index == 5) {
+                    return "${song_equador}";
+                  } else if (index == 6) {
+                    return "${song_ateam}";
                   } else {
                     return "${song_onboot}";
                   }
 
-                  return index == 1 ? "${song_ateam}" : "${song_getready}";
       - script.execute: start_blink_red
