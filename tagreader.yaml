@@ -1,6 +1,6 @@
 substitutions:
   devicename: tagreader
-  friendly_name: TagReader
+  friendly_name: Tag Reader
   pin_buzzer: D8
   pin_activity_led: D7
   sound_success: "success:d=24,o=5,b=100:c,g,b"
@@ -11,6 +11,7 @@ substitutions:
 
 esphome:
   name: $devicename
+  friendly_name: ${friendly_name}
   platform: ESP8266
   board: d1_mini
   # If buzzer is enabled, notify on api connection success
@@ -40,14 +41,14 @@ packages:
 # Define switches to control LED and buzzer from HA
 switch:
 - platform: template
-  name: "${friendly_name} Buzzer Enabled"
+  name: Buzzer Enabled
   id: buzzer_enabled
   icon: mdi:volume-high
   optimistic: true
   restore_state: true
 
 - platform: template
-  name: "${friendly_name} LED enabled"
+  name: LED Enabled
   id: led_enabled
   icon: mdi:alarm-light-outline
   optimistic: true
@@ -183,7 +184,7 @@ output:
 
 binary_sensor:
 - platform: status
-  name: "${friendly_name} Status"
+  name: Status
 
 
 # Define buzzer as output for RTTTL
@@ -193,12 +194,12 @@ rtttl:
 
 # Configure LED
 light:
-- platform: fastled_clockless
-  name: "${friendly_name} LED"
+- platform: neopixelbus
+  name: Activity LED
   id: activity_led
-  chipset: WS2812
+  type: RGB
+  variant: WS2812
   pin: ${pin_activity_led}
-  default_transition_length: 10ms
   num_leds: 1
-  rgb_order: RGB
+  default_transition_length: 10ms
   restore_mode: ALWAYS_OFF

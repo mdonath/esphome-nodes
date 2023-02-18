@@ -22,7 +22,7 @@ display:
     intensity: 8
     update_interval: 67ms
     lambda: |-
-      it.intensity(id(brightness).state);
+      it.intensity(id(brightness));
       if (id(display_page) == 0) {
         it.turn_on_off(false);
 
@@ -42,6 +42,29 @@ display:
         if (id(internet_abel).state == "off") {
           it.draw_pixel_at(1,6, COLOR_OFF);
         }
+
+        if (id(contact_voordeur).state) {
+          it.draw_pixel_at(31,0);
+        }
+        if (id(contact_achterdeur).state) {
+          it.draw_pixel_at(31,1);
+        }
+        if (id(contact_raam_martijn).state) {
+          it.draw_pixel_at(31,2);
+        }
+        if (id(contact_raam_abel).state) {
+          it.draw_pixel_at(31,3);
+        }
+        if (id(contact_raam_marjolein).state) {
+          it.draw_pixel_at(31,4);
+        }
+        if (id(contact_bergingdeur).state) {
+          it.draw_pixel_at(31,5);
+        }
+        if (id(contact_trapdeur).state) {
+          it.draw_pixel_at(31,6);
+        }
+
 
       } else if (id(display_page) == 2) {
         it.turn_on_off(true);
@@ -68,8 +91,8 @@ display:
       } else if (id(display_page) == 4) {
         it.turn_on_off(true);
         it.printf(0,0, id(font_press), id(text).state.c_str());
-        auto scrollmode = id(scroll_mode).state == 0 ?  esphome::max7219digit::ScrollMode::CONTINUOUS : esphome::max7219digit::ScrollMode::STOP;
-        it.scroll(true, scrollmode, id(scroll_speed).state, id(scroll_delay).state, id(scroll_dwell).state);
+        auto scrollmode = id(scroll_mode) == 0 ?  esphome::max7219digit::ScrollMode::CONTINUOUS : esphome::max7219digit::ScrollMode::STOP;
+        it.scroll(true, scrollmode, id(scroll_speed), id(scroll_delay), id(scroll_dwell));
 
       } else if (id(display_page) == 5) {
         it.turn_on_off(true);
@@ -77,28 +100,13 @@ display:
 
       } else if (id(display_page) == 6) {
         it.turn_on_off(true);
-        // it.printf(0,0, id(font_press), TextAlign::TOP_LEFT, "%s...", id(text_alert).c_str());
-        auto scrollmode = id(scroll_mode).state == 0 ?  esphome::max7219digit::ScrollMode::CONTINUOUS : esphome::max7219digit::ScrollMode::STOP;
-        it.scroll(true, scrollmode, id(scroll_speed).state, id(scroll_delay).state, id(scroll_dwell).state);
+        it.printf(0,0, id(font_press), TextAlign::TOP_LEFT, "%s...", id(alert_message).c_str());
+        auto scrollmode = id(scroll_mode) == 0 ?  esphome::max7219digit::ScrollMode::CONTINUOUS : esphome::max7219digit::ScrollMode::STOP;
+        it.scroll(true, scrollmode, id(alert_speed), id(scroll_delay), id(scroll_dwell));
       }
 
 
 font:
-  - file: "fonts/Mojang-Regular.ttf"
-    id: font_mojang
-    size: 8
-    glyphs:
-      - '0'
-      - '1'
-      - '2'
-      - '3'
-      - '4'
-      - '5'
-      - '6'
-      - '7'
-      - '8'
-      - '9'
-      - ':'
   - file: "fonts/PressStart2P.ttf"
     id: font_press
     size: 8
@@ -179,7 +187,7 @@ font:
 binary_sensor:
   - platform: gpio
     id: red_button
-    name: ${friendly_name} Right Button
+    name: Right Button
     pin:
       number: D3
       # mode: INPUT_PULLUP
@@ -189,7 +197,7 @@ binary_sensor:
         - script.execute: display_next_page
   - platform: gpio
     id: green_button
-    name: ${friendly_name} Left Button
+    name: Left Button
     pin:
       number: D4
       mode: INPUT_PULLUP

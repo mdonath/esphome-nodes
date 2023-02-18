@@ -1,13 +1,49 @@
 
 globals:
-  - id: display_page
+  - # number of the page to display
+    id: display_page
     type: int
     restore_value: no
     initial_value: '1'
-
+  - # brightness of the display
+    id: brightness
+    type: int
+    restore_value: no
+    initial_value: '1'
+  - # Scrollmode: continuous or stop (at end)
+    id: scroll_mode
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - # The speed of the scroll, it's the delay in ms after each update
+    id: scroll_speed
+    type: int
+    restore_value: no
+    initial_value: '100'
+  - # Pause in ms before starting to scroll
+    id: scroll_delay
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - # Pause in ms after scrolling all text in Continuous mode
+    id: scroll_dwell
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - # The message to display when an alert is shown
+    id: alert_message
+    type: std::string
+    restore_value: no
+    initial_value: '""'
+  - # The speed of the alert, it's the delay in ms after each update
+    id: alert_speed
+    type: int
+    restore_value: no
+    initial_value: '100'
 
 esphome:
   name: ${devicename}
+  friendly_name: ${friendly_name}
   platform: ESP8266
   board: d1_mini
   on_boot:
@@ -51,81 +87,152 @@ api:
   - service: alert
     variables:
       text: string
-      sound: bool
+      speed: int
     then:
-      - script.execute: display_alert
+      - globals.set:
+          id: alert_message
+          value: !lambda 'return text;'
+      - globals.set:
+          id: alert_speed
+          value: !lambda 'return speed;'
+      - script.execute: display_page6
 
 time:
   - platform: homeassistant
     id: hass_time
+
+binary_sensor:
+  - platform: homeassistant
+    id: contact_voordeur
+    internal: True
+    entity_id: binary_sensor.contact_voordeur_contact
+  - platform: homeassistant
+    id: contact_achterdeur
+    internal: True
+    entity_id: binary_sensor.contact_achterdeur_contact
+
+  - platform: homeassistant
+    id: contact_raam_martijn
+    internal: True
+    entity_id: binary_sensor.contact_slaapkamerraam_martijn_contact
+  - platform: homeassistant
+    id: contact_raam_abel
+    internal: True
+    entity_id: binary_sensor.contact_slaapkamerraam_abel_contact
+  - platform: homeassistant
+    id: contact_raam_marjolein
+    internal: True
+    entity_id: binary_sensor.contact_zolderraam_contact
+
+  - platform: homeassistant
+    id: contact_bergingdeur
+    internal: True
+    entity_id: binary_sensor.contact_bergingdeur_contact
+  - platform: homeassistant
+    id: contact_trapdeur
+    internal: True
+    entity_id: binary_sensor.contact_trapdeur_contact
 
 
 text_sensor:
   - platform: homeassistant
     id: text
     entity_id: input_text.${devicename}_text
+
   - platform: homeassistant
     id: person_martijn
+    internal: True
     entity_id: person.martijn_donath
   - platform: homeassistant
     id: person_veerle
+    internal: True
     entity_id: person.veerle
   - platform: homeassistant
     id: person_marjolein
+    internal: True
     entity_id: person.marjolein
   - platform: homeassistant
     id: person_abel
+    internal: True
     entity_id: person.abel
+
   - platform: homeassistant
     id: internet_abel
     internal: True
-    entity_id: group.internet_devices_abel
+    entity_id: switch.internet_apparaten_abel
   - platform: homeassistant
     id: internet_marjolein
     internal: True
-    entity_id: group.internet_devices_marjolein
+    entity_id: switch.internet_apparaten_marjolein
   - platform: homeassistant
     id: internet_veerle
     internal: True
-    entity_id: group.internet_devices_veerle
+    entity_id: switch.internet_apparaten_veerle
+
+number:
+  - platform: template
+    name: Brightness
+    min_value: 0
+    max_value: 15
+    step: 1
+    set_action:
+      - globals.set:
+          id: brightness
+          value: !lambda 'return x;'
+  - platform: template
+    name: Scroll Speed
+    min_value: 0
+    max_value: 100
+    step: 1
+    set_action:
+      - globals.set:
+          id: scroll_speed
+          value: !lambda 'return x;'
+  - platform: template
+    name: Scroll Delay
+    min_value: 0
+    max_value: 5000
+    step: 100
+    set_action:
+      - globals.set:
+          id: scroll_delay
+          value: !lambda 'return x;'
+  - platform: template
+    name: Scroll Dwell
+    min_value: 0
+    max_value: 5000
+    step: 100
+    set_action:
+      - globals.set:
+          id: scroll_dwell
+          value: !lambda 'return x;'
+
+select:
+  - platform: template
+    id: scroll_mode_select
+    name: Scroll Mode
+    optimistic: true
+    options:
+      - CONTINUOUS
+      - STOP
+    set_action:
+      - globals.set:
+          id: scroll_mode
+          value: !lambda |-
+            auto index = id(scroll_mode_select).index_of(x);
+            return index.has_value() ? index.value() : 0;
 
 sensor:
   - platform: homeassistant
     id: current_power_usage
     internal: True
     entity_id: sensor.power_consumption
-  - platform: homeassistant
-    id: brightness
-    name: ${friendly_name} Brightness
-    entity_id: input_number.${devicename}_brightness
-    accuracy_decimals: 0
-  - platform: homeassistant
-    id: scroll_mode
-    name: ${friendly_name} Scroll Mode
-    entity_id: input_number.${devicename}_scroll_mode
-    accuracy_decimals: 0
-  - platform: homeassistant
-    id: scroll_speed
-    name: ${friendly_name} Scroll Speed
-    entity_id: input_number.${devicename}_scroll_speed
-    accuracy_decimals: 0
-  - platform: homeassistant
-    id: scroll_delay
-    name: ${friendly_name} Scroll Delay
-    entity_id: input_number.${devicename}_scroll_delay
-    accuracy_decimals: 0
-  - platform: homeassistant
-    id: scroll_dwell
-    name: ${friendly_name} Scroll Dwell
-    entity_id: input_number.${devicename}_scroll_dwell
-    accuracy_decimals: 0
 
 switch:
   - platform: template
-    name: ${friendly_name}
+    name: Switch
     id: ticker_on_off
     icon: "mdi:clock-digital"
-    restore_state: True
     turn_off_action:
       - switch.template.publish:
           id: ticker_on_off
@@ -139,7 +246,7 @@ switch:
 
 button:
   - platform: template
-    name: ${friendly_name} Next Page
+    name: Next Page
     on_press:
       then:
         - script.execute: display_next_page
@@ -153,7 +260,7 @@ script:
             switch.is_on: ticker_on_off
           then:
             - lambda: |-
-                if (id(display_page) < 6) {
+                if (id(display_page) < 5) {
                   id(display_page) += 1;
                 } else {
                   id(display_page) = 1;
@@ -221,9 +328,17 @@ script:
                 id: display_page
                 value: '5'
             - component.update: ticker_display
-  - id: display_alert
+  - id: display_page6
     then:
-      - logger.log: "ALERT!"
+      - logger.log: "Script display page 6"
+      - if:
+          condition:
+            switch.is_on: ticker_on_off
+          then:
+            - globals.set:
+                id: display_page
+                value: '6'
+            - component.update: ticker_display
   - id: action_button
     then:
       - if:
@@ -231,10 +346,10 @@ script:
             lambda: 'return id(display_page) == 1;'
           then:
             - lambda: |-
-                if (id(brightness).state != 0) {
-                  id(brightness).publish_state(0);
+                if (id(brightness) != 0) {
+                  id(brightness) = 0;
                 } else {
-                  id(brightness).publish_state(3);
+                  id(brightness) = 3;
                 }
       - if:
           condition:
