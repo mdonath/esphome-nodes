@@ -1,0 +1,22 @@
+esphome:
+  name: lichtsterkte
+  friendly_name: Lichtsterkte
+
+esp8266:
+  board: d1_mini
+
+packages:
+  wifi: !include common/wifi.yaml
+  always: !include common/always.yaml
+
+api:
+
+i2c:
+  scan: False
+  frequency: 400kHz
+
+sensor:
+  - platform: bh1750
+    name: "BH1750 Illuminance"
+    address: 0x23
+    update_interval: 60s
