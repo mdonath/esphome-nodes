@@ -20,7 +20,7 @@ using max7219mapped_writer_t = std::function<void(MAX7219MappedComponent &)>;
                                 public spi::SPIDevice<spi::BIT_ORDER_MSB_FIRST, spi::CLOCK_POLARITY_LOW,
                                                       spi::CLOCK_PHASE_LEADING, spi::DATA_RATE_1MHZ> {
   public:
-   void set_mapping(std::initializer_list<uint8> mapping);
+   void set_mapping(std::initializer_list<uint8_t> mapping);
 
    void set_writer(max7219mapped_writer_t &&writer);
  

@@ -140,7 +140,7 @@ void MAX7219MappedComponent::dump_config() {
     LOG_UPDATE_INTERVAL(this);
 }
 
-void MAX7219MappedComponent::set_mapping(std::initializer_list<uint8> mapping) {
+void MAX7219MappedComponent::set_mapping(std::initializer_list<uint8_t> mapping) {
     std::copy(mapping.begin(), mapping.end(), this->map_);
     this->has_map_ = true;
 }

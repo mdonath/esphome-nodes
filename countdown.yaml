@@ -1,6 +1,5 @@
 substitutions:
   devicename: countdown
-  friendly_name: Countdown
   page_option_1: "Datetime"
   page_option_2: "Timestamp"
   page_option_3: "Countdown"
@@ -8,6 +7,7 @@ substitutions:
 
 esphome:
   name: ${devicename}
+  friendly_name: Countdown
   platform: ESP8266
   board: d1_mini
   includes:
@@ -50,8 +50,8 @@ display:
     index: [0x0B, 0x0C, 0x0D, 0x0E, 0x0F,   0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A,   0x00, 0x01, 0x02]
     lambda: |-
       auto time = id(hass_time).now();
-      auto page = id(page_select).state;
-      if (page == "${page_option_1}") {
+      auto selected_page = id(page).state;
+      if (selected_page == "${page_option_1}") {
         // Show current date and time
         it.printf("%02d-%02d-%04d%d%d.%d.%d.%d.%d",
           time.day_of_month, time.month, time.year,
@@ -60,11 +60,11 @@ display:
           time.second / 10, time.second % 10
         );
 
-      } else if (page == "${page_option_2}") {
+      } else if (selected_page == "${page_option_2}") {
         // Show seconds since epoch
-        it.printf("%010ld", time.timestamp);
+        it.printf("%010ld", (long int) time.timestamp);
 
-      } else if (page == "${page_option_3}") {
+      } else if (selected_page == "${page_option_3}") {
         // Show seconds to/from target
         TimeDiffDays difference;
         calculate_diff(
@@ -83,7 +83,7 @@ display:
           difference.seconds / 10, difference.seconds % 10
         );
 
-      } else if (page == "${page_option_4}") {
+      } else if (selected_page == "${page_option_4}") {
         // Unused
         it.print("todo");
       }
@@ -91,7 +91,7 @@ display:
 binary_sensor:
   - platform: gpio
     id: rotary_button
-    name: ${friendly_name} Rotary Button
+    name: Rotary Button
     pin:
       number: D4
       mode: INPUT_PULLUP
@@ -104,7 +104,7 @@ binary_sensor:
 sensor:
   - platform: rotary_encoder
     id: the_rotary_encoder
-    name: ${friendly_name} Rotary Encoder
+    name: Rotary Encoder
     pin_a: D1
     pin_b: D2
     resolution: 2
@@ -129,8 +129,8 @@ text_sensor:
 
 number:
   - platform: template
-    id: brightness_select
-    name: ${friendly_name} Brightness
+    id: brightness
+    name: Brightness
     optimistic: true
     min_value: 0
     max_value: 15
@@ -143,8 +143,8 @@ number:
 
 select:
   - platform: template
-    id: page_select
-    name: ${friendly_name} Page
+    id: page
+    name: Page
     optimistic: true
     options:
       - "${page_option_1}"
@@ -159,15 +159,15 @@ script:
     then:
       - logger.log: "Next Page"
       - lambda: |-
-          auto page = id(page_select).state;
-          auto call = id(page_select).make_call();
-          if (page == "${page_option_1}") {
+          auto selected_page = id(page).state;
+          auto call = id(page).make_call();
+          if (selected_page == "${page_option_1}") {
             call.set_option("${page_option_2}");
-          } else if (page == "${page_option_2}") {
+          } else if (selected_page == "${page_option_2}") {
             call.set_option("${page_option_3}");
-          } else if (page == "${page_option_3}") {
+          } else if (selected_page == "${page_option_3}") {
             call.set_option("${page_option_4}");
-          } else if (page == "${page_option_4}") {
+          } else if (selected_page == "${page_option_4}") {
             call.set_option("${page_option_1}");
           }
           call.perform();
@@ -177,19 +177,19 @@ script:
       - logger.log: "Increase"
       - if:
           condition:
-            lambda: 'return id(page_select).state == "${page_option_1}";'
+            lambda: 'return id(page).state == "${page_option_1}";'
           then:
-            - number.set:
-                id: brightness_select
-                value: 15
+            - number.increment:
+                id: brightness
+                cycle: false
 
   - id: decrease
     then:
       - logger.log: "Decrease"
       - if:
           condition:
-            lambda: 'return id(page_select).state == "${page_option_1}";'
+            lambda: 'return id(page).state == "${page_option_1}";'
           then:
-            - number.set:
-                id: brightness_select
-                value: 0
+            - number.decrement:
+                id: brightness
+                cycle: false
