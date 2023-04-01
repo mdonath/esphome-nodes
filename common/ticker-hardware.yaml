@@ -96,7 +96,7 @@ display:
 
       } else if (id(display_page) == 5) {
         it.turn_on_off(true);
-        it.printf(33,0, id(font_press), TextAlign::TOP_RIGHT, "%.0f", 1000.0 * id(current_power_usage).state);
+        it.printf(33,0, id(font_press), TextAlign::TOP_RIGHT, "%.0f", id(current_power_usage).state);
 
       } else if (id(display_page) == 6) {
         it.turn_on_off(true);
