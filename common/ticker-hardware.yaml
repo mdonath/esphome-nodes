@@ -64,6 +64,9 @@ display:
         if (id(contact_trapdeur).state) {
           it.draw_pixel_at(31,6);
         }
+        if (id(contact_achtergevel_raam).state) {
+          it.draw_pixel_at(31,7);
+        }
 
 
       } else if (id(display_page) == 2) {

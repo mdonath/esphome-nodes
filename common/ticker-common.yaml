@@ -132,7 +132,10 @@ binary_sensor:
     id: contact_trapdeur
     internal: True
     entity_id: binary_sensor.contact_trapdeur_contact
-
+  - platform: homeassistant
+    id: contact_achtergevel_raam
+    internal: True
+    entity_id: binary_sensor.contact_achtergevelraam_contact
 
 text_sensor:
   - platform: homeassistant
