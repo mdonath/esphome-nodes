@@ -2,7 +2,7 @@
 
 #include "esphome/core/hal.h"
 #include "esphome/components/max7219digit/max7219digit.h"
-#include "esphome/components/time/real_time_clock.h"
+#include "esphome/core/time.h"
 #include "esphome/core/color.h"
 #include "slidefonts.h"
 
@@ -54,7 +54,7 @@ namespace esphome
             }
         }
 
-        void printSlideFormatWithFont(MAX7219Component &it, int x, int y, const char *format, time::ESPTime time, int fontSize)
+        void printSlideFormatWithFont(MAX7219Component &it, int x, int y, const char *format, esphome::ESPTime time, int fontSize)
         {
             // create string based on format
             char buffer[64];
@@ -162,12 +162,12 @@ namespace esphome
             }
         }
 
-        void printSlideFormat(MAX7219Component &it, int x, int y, const char *format, time::ESPTime time)
+        void printSlideFormat(MAX7219Component &it, int x, int y, const char *format, esphome::ESPTime time)
         {
             printSlideFormatWithFont(it, x, y, format, time, 5);
         }
 
-        void printSlideTimeWithFont(MAX7219Component &it, int x, int y, const char *format, time::ESPTime time, int fontSize)
+        void printSlideTimeWithFont(MAX7219Component &it, int x, int y, const char *format, esphome::ESPTime time, int fontSize)
         {
             printSlideFormatWithFont(it, x, y, format, time, fontSize);
         }
@@ -195,7 +195,7 @@ namespace esphome
          * @param y     Vertical position (top)
          * @param time  Current time
          */
-        void printSlideTime(MAX7219Component &it, int x, int y, time::ESPTime time)
+        void printSlideTime(MAX7219Component &it, int x, int y, esphome::ESPTime time)
         {
             printSlideTimeWithFont(it, x, y, "%H;%M", time, 5);
         }
