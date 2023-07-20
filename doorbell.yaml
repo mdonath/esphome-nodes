@@ -69,7 +69,7 @@ switch:
   - platform: template
     name: Chime Active
     id: chime_active
-    restore_state: false
+    restore_mode: DISABLED
     turn_on_action:
       - globals.set:
           id: chime

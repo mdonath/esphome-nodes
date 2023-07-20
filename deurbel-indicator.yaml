@@ -179,7 +179,7 @@ switch:
     id: buzzer_enabled
     icon: mdi:volume-high
     optimistic: true
-    restore_state: true
+    restore_mode: ALWAYS_ON
 
 
 binary_sensor:
