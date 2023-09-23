@@ -45,14 +45,14 @@ switch:
   id: buzzer_enabled
   icon: mdi:volume-high
   optimistic: true
-  restore_state: true
+  restore_mode: DISABLED
 
 - platform: template
   name: LED Enabled
   id: led_enabled
   icon: mdi:alarm-light-outline
   optimistic: true
-  restore_state: true
+  restore_mode: DISABLED
 
 
 # Enable Home Assistant API

@@ -3,42 +3,42 @@ globals:
   - # number of the page to display
     id: display_page
     type: int
-    restore_value: no
+    restore_value: false
     initial_value: '1'
   - # brightness of the display
     id: brightness
     type: int
-    restore_value: no
+    restore_value: false
     initial_value: '1'
   - # Scrollmode: continuous or stop (at end)
     id: scroll_mode
     type: int
-    restore_value: no
+    restore_value: false
     initial_value: '0'
   - # The speed of the scroll, it's the delay in ms after each update
     id: scroll_speed
     type: int
-    restore_value: no
+    restore_value: false
     initial_value: '100'
   - # Pause in ms before starting to scroll
     id: scroll_delay
     type: int
-    restore_value: no
+    restore_value: false
     initial_value: '0'
   - # Pause in ms after scrolling all text in Continuous mode
     id: scroll_dwell
     type: int
-    restore_value: no
+    restore_value: false
     initial_value: '0'
   - # The message to display when an alert is shown
     id: alert_message
     type: std::string
-    restore_value: no
+    restore_value: false
     initial_value: '""'
   - # The speed of the alert, it's the delay in ms after each update
     id: alert_speed
     type: int
-    restore_value: no
+    restore_value: false
     initial_value: '100'
 
 esphome:

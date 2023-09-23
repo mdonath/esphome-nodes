@@ -44,28 +44,28 @@ display:
         }
 
         if (id(contact_voordeur).state) {
-          it.draw_pixel_at(31,0);
+          it.draw_pixel_at(31,0, COLOR_ON);
         }
         if (id(contact_achterdeur).state) {
-          it.draw_pixel_at(31,1);
+          it.draw_pixel_at(31,1, COLOR_ON);
         }
         if (id(contact_raam_martijn).state) {
-          it.draw_pixel_at(31,2);
+          it.draw_pixel_at(31,2, COLOR_ON);
         }
         if (id(contact_raam_abel).state) {
-          it.draw_pixel_at(31,3);
+          it.draw_pixel_at(31,3, COLOR_ON);
         }
         if (id(contact_raam_marjolein).state) {
-          it.draw_pixel_at(31,4);
+          it.draw_pixel_at(31,4, COLOR_ON);
         }
         if (id(contact_bergingdeur).state) {
-          it.draw_pixel_at(31,5);
+          it.draw_pixel_at(31,5, COLOR_ON);
         }
         if (id(contact_trapdeur).state) {
-          it.draw_pixel_at(31,6);
+          it.draw_pixel_at(31,6, COLOR_ON);
         }
         if (id(contact_achtergevel_raam).state) {
-          it.draw_pixel_at(31,7);
+          it.draw_pixel_at(31,7, COLOR_ON);
         }
 
 
