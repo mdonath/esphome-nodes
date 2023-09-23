@@ -229,7 +229,7 @@ sensor:
   - platform: homeassistant
     id: current_power_usage
     internal: True
-    entity_id: sensor.power_consumption
+    entity_id: sensor.electricity_netto_usage_in_watt
 
 switch:
   - platform: template
