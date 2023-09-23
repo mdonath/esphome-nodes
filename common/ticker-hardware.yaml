@@ -99,7 +99,8 @@ display:
 
       } else if (id(display_page) == 5) {
         it.turn_on_off(true);
-        it.printf(33,0, id(font_press), TextAlign::TOP_RIGHT, "%.0f", id(current_power_usage).state);
+        // it.printf(33,0, id(font_press), TextAlign::TOP_RIGHT, "%.0f", id(current_power_usage).state);
+        printNumberWithFont(it, 0, 0, "%d", id(current_power_usage).state, 5);
 
       } else if (id(display_page) == 6) {
         it.turn_on_off(true);

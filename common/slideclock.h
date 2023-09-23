@@ -54,14 +54,9 @@ namespace esphome
             }
         }
 
-        void printSlideFormatWithFont(MAX7219Component &it, int x, int y, const char *format, esphome::ESPTime time, int fontSize)
-        {
-            // create string based on format
-            char buffer[64];
-            size_t len = time.strftime(buffer, sizeof(buffer), format);
-            if (len == 0)
-                return;
 
+        void printStringFormatWithFont(MAX7219Component &it, int x, int y, const char *buffer, int len, int fontSize, esphome::ESPTime *time)
+        {
             // get font data
             slidefont::SlideFontType font = slidefont::getFont(fontSize);
 
@@ -147,7 +142,7 @@ namespace esphome
                 }
                 else if (sep.type == ';')
                 {
-                    auto d = time.second % 2;
+                    auto d = time->second % 2;
                     it.draw_absolute_pixel_internal(sep.offset, 2 - d, Color::WHITE);
                     it.draw_absolute_pixel_internal(sep.offset, 4 + d, Color::WHITE);
                 }
@@ -160,6 +155,28 @@ namespace esphome
                     it.draw_absolute_pixel_internal(sep.offset, 6, Color::WHITE);
                 }
             }
+        }
+
+        void printNumberWithFont(MAX7219Component &it, int x, int y, const char *format, int number, int fontSize)
+        {
+            // create string based on format
+            char buffer[64];
+            size_t len = snprintf(buffer, sizeof(buffer), format, number);
+            if (len == 0)
+                return;
+
+            printStringFormatWithFont(it, x, y, buffer, len, fontSize, (esphome::ESPTime*) NULL);
+        }
+
+        void printSlideFormatWithFont(MAX7219Component &it, int x, int y, const char *format, esphome::ESPTime time, int fontSize)
+        {
+            // create string based on format
+            char buffer[64];
+            size_t len = time.strftime(buffer, sizeof(buffer), format);
+            if (len == 0)
+                return;
+
+            printStringFormatWithFont(it, x, y, buffer, len, fontSize, &time);
         }
 
         void printSlideFormat(MAX7219Component &it, int x, int y, const char *format, esphome::ESPTime time)
