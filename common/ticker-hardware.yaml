@@ -93,7 +93,7 @@ display:
 
       } else if (id(display_page) == 4) {
         it.turn_on_off(true);
-        it.printf(0,0, id(font_press), id(text).state.c_str());
+        it.printf(0,0, id(font_press), id(display_text).state.c_str());
         auto scrollmode = id(scroll_mode) == 0 ?  esphome::max7219digit::ScrollMode::CONTINUOUS : esphome::max7219digit::ScrollMode::STOP;
         it.scroll(true, scrollmode, id(scroll_speed), id(scroll_delay), id(scroll_dwell));
 

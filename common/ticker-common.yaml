@@ -86,12 +86,12 @@ api:
       - component.update: ticker_display
   - service: alert
     variables:
-      text: string
+      input_text: string
       speed: int
     then:
       - globals.set:
           id: alert_message
-          value: !lambda 'return text;'
+          value: !lambda 'return input_text;'
       - globals.set:
           id: alert_speed
           value: !lambda 'return speed;'
@@ -139,7 +139,7 @@ binary_sensor:
 
 text_sensor:
   - platform: homeassistant
-    id: text
+    id: display_text
     entity_id: input_text.${devicename}_text
 
   - platform: homeassistant
