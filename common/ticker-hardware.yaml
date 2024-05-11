@@ -1,12 +1,13 @@
-
 spi:
   clk_pin: D5
   mosi_pin: D7
+
 
 output:
   - platform: esp8266_pwm
     id: buzzer
     pin: D1
+
 
 rtttl:
   output: buzzer
@@ -22,13 +23,17 @@ display:
     intensity: 8
     update_interval: 67ms
     lambda: |-
-      it.intensity(id(brightness));
-      if (id(display_page) == 0) {
+      it.intensity(id(brightness).state);
+
+      // Page 0: Turned off
+      if (id(page_number).state == 0) {
         it.turn_on_off(false);
 
-      } else if (id(display_page) == 1) {
+      // Page 1: Klok with font: 5x7 and all indicators
+      } else if (id(page_number).state == 1) {
         it.turn_on_off(true);
         printSlideTime(it, 5, 0, id(hass_time).now());
+
         it.line(0,0, (id(person_martijn).state == "home") ? 2 : 0,0);
         it.line(0,2, (id(person_veerle).state == "home") ? 2 : 0,2);
         it.line(0,4, (id(person_marjolein).state == "home") ? 2 : 0,4);
@@ -68,12 +73,13 @@ display:
           it.draw_pixel_at(31,7, COLOR_ON);
         }
 
-
-      } else if (id(display_page) == 2) {
+      // Page 2: Klok with font: 4x7
+      } else if (id(page_number).state == 2) {
         it.turn_on_off(true);
         printSlideFormatWithFont(it, 0, 0, "%H|%M|%S", id(hass_time).now(), 4);
 
-      } else if (id(display_page) == 3) {
+      // Page 3: Klok with font: 3x7
+      } else if (id(page_number).state == 3) {
         it.turn_on_off(true);
         printSlideFormatWithFont(it, 4, 0, "%H:%M:%S", id(hass_time).now(), 3);
         
@@ -91,22 +97,17 @@ display:
           it.draw_pixel_at(1,6, COLOR_OFF);
         }
 
-      } else if (id(display_page) == 4) {
+      // Page 4: Powerusage
+      } else if (id(page_number).state == 4) {
         it.turn_on_off(true);
-        it.printf(0,0, id(font_press), id(display_text).state.c_str());
-        auto scrollmode = id(scroll_mode) == 0 ?  esphome::max7219digit::ScrollMode::CONTINUOUS : esphome::max7219digit::ScrollMode::STOP;
-        it.scroll(true, scrollmode, id(scroll_speed), id(scroll_delay), id(scroll_dwell));
-
-      } else if (id(display_page) == 5) {
-        it.turn_on_off(true);
-        // it.printf(33,0, id(font_press), TextAlign::TOP_RIGHT, "%.0f", id(current_power_usage).state);
         printNumberWithFont(it, 0, 0, "%d", id(current_power_usage).state, 5);
 
-      } else if (id(display_page) == 6) {
+      // Page 5: (Not in cycle) Show alert message
+      } else if (id(page_number).state == 5) {
         it.turn_on_off(true);
-        it.printf(0,0, id(font_press), TextAlign::TOP_LEFT, "%s...", id(alert_message).c_str());
-        auto scrollmode = id(scroll_mode) == 0 ?  esphome::max7219digit::ScrollMode::CONTINUOUS : esphome::max7219digit::ScrollMode::STOP;
-        it.scroll(true, scrollmode, id(alert_speed), id(scroll_delay), id(scroll_dwell));
+        it.printf(0,0, id(font_press), TextAlign::TOP_LEFT, "%s...", id(glob_alert_message).c_str());
+        auto scrollmode = id(scroll_mode).index_of(id(scroll_mode).state.c_str()) == 0 ? esphome::max7219digit::ScrollMode::CONTINUOUS : esphome::max7219digit::ScrollMode::STOP;
+        it.scroll(true, scrollmode, id(glob_alert_speed), id(scroll_delay).state, id(scroll_dwell).state);
       }
 
 
@@ -190,16 +191,7 @@ font:
 
 
 binary_sensor:
-  - platform: gpio
-    id: red_button
-    name: Right Button
-    pin:
-      number: D3
-      # mode: INPUT_PULLUP
-      inverted: True
-    on_click:
-      then:
-        - script.execute: display_next_page
+    # Left button pressed
   - platform: gpio
     id: green_button
     name: Left Button
@@ -207,6 +199,21 @@ binary_sensor:
       number: D4
       mode: INPUT_PULLUP
       inverted: True
+    filters:
+      - delayed_off: 20ms
     on_click:
       then:
         - script.execute: action_button
+    # Right button pressed
+  - platform: gpio
+    id: red_button
+    name: Right Button
+    pin:
+      number: D3
+      # mode: INPUT_PULLUP
+      inverted: True
+    filters:
+      - delayed_off: 20ms
+    on_click:
+      then:
+        - script.execute: select_button

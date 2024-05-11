@@ -1,45 +1,15 @@
-
 globals:
-  - # number of the page to display
-    id: display_page
-    type: int
-    restore_value: false
-    initial_value: '1'
-  - # brightness of the display
-    id: brightness
-    type: int
-    restore_value: false
-    initial_value: '1'
-  - # Scrollmode: continuous or stop (at end)
-    id: scroll_mode
-    type: int
-    restore_value: false
-    initial_value: '0'
-  - # The speed of the scroll, it's the delay in ms after each update
-    id: scroll_speed
-    type: int
-    restore_value: false
-    initial_value: '100'
-  - # Pause in ms before starting to scroll
-    id: scroll_delay
-    type: int
-    restore_value: false
-    initial_value: '0'
-  - # Pause in ms after scrolling all text in Continuous mode
-    id: scroll_dwell
-    type: int
-    restore_value: false
-    initial_value: '0'
   - # The message to display when an alert is shown
-    id: alert_message
+    id: glob_alert_message
     type: std::string
     restore_value: false
     initial_value: '""'
   - # The speed of the alert, it's the delay in ms after each update
-    id: alert_speed
+    id: glob_alert_speed
     type: int
     restore_value: false
     initial_value: '100'
+
 
 esphome:
   name: ${devicename}
@@ -51,14 +21,19 @@ esphome:
     then:
       - wait_until:
           api.connected:
-      - logger.log: API is connected
       - rtttl.play: "success:d=24,o=5,b=100:c,g,b"
       - switch.template.publish:
           id: ticker_on_off
           state: ON
+      - delay: 1s
+      - script.execute:
+          id: display_page
+          page_number: 1
+
   includes:
     - common/slideclock.h
     - common/slidefonts.h
+
 
 packages:
   always: !include always.yaml
@@ -66,40 +41,64 @@ packages:
   mqtt: !include mqtt.yaml
   hardware: !include ticker-hardware.yaml
 
+
 api:
   services:
+    # Displays next page (cycles)
+  - service: display_next_page
+    then:
+      - script.execute: display_next_page
+
+    # Displays specified page
+  - service: display_page
+    variables:
+      page: int
+    then:
+      - number.set:
+          id: page_number
+          value: !lambda 'return page;'
+      - component.update: ticker_display
+
+    # Plays an rtttl tune
   - service: play_rtttl
     variables:
       song_str: string
     then:
       - rtttl.play: !lambda 'return song_str;'
-  - service: display_next_page
-    then:
-      - script.execute: display_next_page
-  - service: display_page
-    variables:
-      page: int
-    then:
-      - globals.set:
-          id: display_page
-          value: !lambda 'return page;'
-      - component.update: ticker_display
+
+    # Scrolls an alert message
   - service: alert
     variables:
       input_text: string
       speed: int
+      duration: int
     then:
       - globals.set:
-          id: alert_message
+          id: glob_alert_message
           value: !lambda 'return input_text;'
       - globals.set:
-          id: alert_speed
+          id: glob_alert_speed
           value: !lambda 'return speed;'
-      - script.execute: display_page6
+      - script.execute:
+          id: display_page
+          page_number: 5
+      - delay: !lambda return duration * 1000;
+      - script.execute:
+          id: display_page
+          page_number: 1
+
 
 time:
   - platform: homeassistant
     id: hass_time
+
+
+sensor:
+  - platform: homeassistant
+    id: current_power_usage
+    internal: True
+    entity_id: sensor.electriciteit_netto_verbruik_in_watt
+
 
 binary_sensor:
   - platform: homeassistant
@@ -137,11 +136,8 @@ binary_sensor:
     internal: True
     entity_id: binary_sensor.contact_achtergevelraam_contact
 
-text_sensor:
-  - platform: homeassistant
-    id: display_text
-    entity_id: input_text.${devicename}_text
 
+text_sensor:
   - platform: homeassistant
     id: person_martijn
     internal: True
@@ -172,66 +168,71 @@ text_sensor:
     internal: True
     entity_id: switch.internet_apparaten_veerle
 
+
 number:
+    # Configure page to show
+  - platform: template
+    name: Page
+    id: page_number
+    optimistic: true
+    restore_value: true
+    initial_value: 1
+    min_value: 0
+    max_value: 5
+    step: 1
+
+    # Configure Brightness of the display [0-15]
   - platform: template
     name: Brightness
+    id: brightness
+    entity_category: config
+    optimistic: true
+    restore_value: true
+    initial_value: 1
     min_value: 0
     max_value: 15
     step: 1
-    set_action:
-      - globals.set:
-          id: brightness
-          value: !lambda 'return x;'
-  - platform: template
-    name: Scroll Speed
-    min_value: 0
-    max_value: 100
-    step: 1
-    set_action:
-      - globals.set:
-          id: scroll_speed
-          value: !lambda 'return x;'
+
+    # Configure Pause in ms before starting to scroll
   - platform: template
     name: Scroll Delay
+    id: scroll_delay
+    entity_category: config
+    optimistic: true
+    restore_value: true
+    initial_value: 0
     min_value: 0
     max_value: 5000
     step: 100
-    set_action:
-      - globals.set:
-          id: scroll_delay
-          value: !lambda 'return x;'
+
+    # Configure Pause in ms after scrolling all text in Continuous mode
   - platform: template
     name: Scroll Dwell
+    id: scroll_dwell
+    entity_category: config
+    optimistic: true
+    restore_value: true
+    initial_value: 0
     min_value: 0
     max_value: 5000
     step: 100
-    set_action:
-      - globals.set:
-          id: scroll_dwell
-          value: !lambda 'return x;'
+
 
 select:
+    # Configure Scrollmode: continuous or stop (at end)
   - platform: template
-    id: scroll_mode_select
+    id: scroll_mode
     name: Scroll Mode
+    entity_category: config
     optimistic: true
+    initial_option: CONTINUOUS
     options:
       - CONTINUOUS
       - STOP
-    set_action:
-      - globals.set:
-          id: scroll_mode
-          value: !lambda |-
-            auto index = id(scroll_mode_select).index_of(x);
-            return index.has_value() ? index.value() : 0;
 
-sensor:
-  - platform: homeassistant
-    id: current_power_usage
-    internal: True
-    entity_id: sensor.electriciteit_netto_verbruik_in_watt
 
 switch:
+    # UI Switch to turn display on/off
   - platform: template
     name: Switch
     id: ticker_on_off
@@ -240,123 +241,86 @@ switch:
       - switch.template.publish:
           id: ticker_on_off
           state: OFF
-      - script.execute: display_page0
+      - script.execute:
+          id: display_page
+          page_number: 0
     turn_on_action:
       - switch.template.publish:
           id: ticker_on_off
           state: ON
-      - script.execute: display_page1
+      - script.execute:
+          id: display_page
+          page_number: 1
+
 
 button:
+    # UI Button to select next page to display
   - platform: template
     name: Next Page
     on_press:
       then:
         - script.execute: display_next_page
 
+
 script:
+    # Shows next page
   - id: display_next_page
     then:
-      - logger.log: "Script display next page"
       - if:
           condition:
             switch.is_on: ticker_on_off
           then:
-            - lambda: |-
-                if (id(display_page) < 5) {
-                  id(display_page) += 1;
-                } else {
-                  id(display_page) = 1;
-                }
+            - if:
+                condition:
+                  number.in_range:
+                    id: page_number
+                    above: 1
+                    below: 3
+                then:
+                  - number.increment: page_number
+                else:
+                  - number.set:
+                      id: page_number
+                      value: 1
             - component.update: ticker_display
-  - id: display_page0
+
+    # Show page with specified number [0-5]
+  - id: display_page
+    parameters:
+      page_number: int
     then:
-      - logger.log: "Script display page 0"
-      - globals.set:
-          id: display_page
-          value: '0'
+      - number.set:
+          id: page_number
+          value: !lambda return page_number;
       - component.update: ticker_display
-  - id: display_page1
+
+    # Action when the Select Button is pressed
+  - id: select_button
     then:
-      - logger.log: "Script display page 1"
-      - if:
-          condition:
-            switch.is_on: ticker_on_off
-          then:
-            - globals.set:
-                id: display_page
-                value: '1'
-            - component.update: ticker_display
-  - id: display_page2
-    then:
-      - logger.log: "Script display page 2"
-      - if:
-          condition:
-            switch.is_on: ticker_on_off
-          then:
-            - globals.set:
-                id: display_page
-                value: '2'
-            - component.update: ticker_display
-  - id: display_page3
-    then:
-      - logger.log: "Script display page 3"
-      - if:
-          condition:
-            switch.is_on: ticker_on_off
-          then:
-            - globals.set:
-                id: display_page
-                value: '3'
-            - component.update: ticker_display
-  - id: display_page4
-    then:
-      - logger.log: "Script display page 4"
-      - if:
-          condition:
-            switch.is_on: ticker_on_off
-          then:
-            - globals.set:
-                id: display_page
-                value: '4'
-            - component.update: ticker_display
-  - id: display_page5
-    then:
-      - logger.log: "Script display page 5"
-      - if:
-          condition:
-            switch.is_on: ticker_on_off
-          then:
-            - globals.set:
-                id: display_page
-                value: '5'
-            - component.update: ticker_display
-  - id: display_page6
-    then:
-      - logger.log: "Script display page 6"
-      - if:
-          condition:
-            switch.is_on: ticker_on_off
-          then:
-            - globals.set:
-                id: display_page
-                value: '6'
-            - component.update: ticker_display
+      - script.execute: display_next_page
+
+    # Action when the Action Button is pressed
   - id: action_button
     then:
       - if:
           condition:
-            lambda: 'return id(display_page) == 1;'
+            lambda: 'return id(page_number).state == 1;'
           then:
-            - lambda: |-
-                if (id(brightness) != 0) {
-                  id(brightness) = 0;
-                } else {
-                  id(brightness) = 3;
-                }
+            - if:
+                condition:
+                  number.in_range:
+                    id: brightness
+                    above: 1
+                then:
+                  - number.set:
+                      id: brightness
+                      value: 0
+                else:
+                  - number.set:
+                      id: brightness
+                      value: 3
       - if:
           condition:
-            lambda: 'return id(display_page) == 2;'
+            lambda: 'return id(page_number).state == 2;'
           then:
             - rtttl.play: "success:d=24,o=5,b=100:c,c,c"
-            
