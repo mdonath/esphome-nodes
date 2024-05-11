@@ -10,5 +10,7 @@
 !remotes
 !*.yaml
 !*.h
+!README.md
+!requirements.txt
 !.gitignore
 /secrets.yaml
