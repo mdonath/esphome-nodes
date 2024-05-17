@@ -104,37 +104,37 @@ binary_sensor:
   - platform: homeassistant
     id: contact_voordeur
     internal: True
-    entity_id: binary_sensor.contact_voordeur_contact
+    entity_id: binary_sensor.klok_indicator_1
   - platform: homeassistant
     id: contact_achterdeur
     internal: True
-    entity_id: binary_sensor.contact_achterdeur_contact
+    entity_id: binary_sensor.klok_indicator_2
 
   - platform: homeassistant
     id: contact_raam_martijn
     internal: True
-    entity_id: binary_sensor.contact_slaapkamerraam_martijn_contact
+    entity_id: binary_sensor.klok_indicator_3
   - platform: homeassistant
     id: contact_raam_abel
     internal: True
-    entity_id: binary_sensor.contact_slaapkamerraam_abel_contact
+    entity_id: binary_sensor.klok_indicator_4
   - platform: homeassistant
     id: contact_raam_marjolein
     internal: True
-    entity_id: binary_sensor.contact_zolderraam_contact
+    entity_id: binary_sensor.klok_indicator_5
 
   - platform: homeassistant
     id: contact_bergingdeur
     internal: True
-    entity_id: binary_sensor.contact_bergingdeur_contact
+    entity_id: binary_sensor.klok_indicator_6
   - platform: homeassistant
     id: contact_trapdeur
     internal: True
-    entity_id: binary_sensor.contact_trapdeur_contact
+    entity_id: binary_sensor.klok_indicator_7
   - platform: homeassistant
     id: contact_achtergevel_raam
     internal: True
-    entity_id: binary_sensor.contact_achtergevelraam_contact
+    entity_id: binary_sensor.klok_indicator_8
 
 
 text_sensor:
