@@ -8,15 +8,11 @@ esphome:
     version: "2.0"
 
 packages:
+  always: !include common/always.yaml
   wifi: !include common/wifi.yaml 
- 
-# Enable logging
-logger:
  
 # Enable Home Assistant API
 api:
- 
-ota:
  
 time:
   - platform: homeassistant

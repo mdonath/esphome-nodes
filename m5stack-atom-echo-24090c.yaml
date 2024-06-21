@@ -4,6 +4,8 @@ substitutions:
 
 packages:
   m5stack.atom-echo-voice-assistant: github://esphome/firmware/voice-assistant/m5stack-atom-echo.yaml@main
+  wifi: !include common/wifi.yaml
+  always: !include common/always.yaml
 
 esphome:
   name: ${name}
@@ -13,8 +15,3 @@ esphome:
 api:
   encryption:
     key: wZTiPffB4HQwSEGrjku9Dt7ThS+qudihICUyNEea/i8=
-
-
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
