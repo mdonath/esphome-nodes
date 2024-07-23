@@ -12,8 +12,6 @@ substitutions:
 esphome:
   name: $devicename
   friendly_name: ${friendly_name}
-  platform: ESP8266
-  board: d1_mini
   # If buzzer is enabled, notify on api connection success
   on_boot:
     priority: -10
@@ -32,6 +30,8 @@ esphome:
     - switch.turn_on: buzzer_enabled
     - switch.turn_on: led_enabled
 
+esp8266:
+  board: d1_mini
 
 packages:
   wifi: !include common/wifi.yaml
