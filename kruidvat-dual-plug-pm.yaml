@@ -48,7 +48,7 @@ sensor:
       name: "HLW8012 Power"
     energy:
       name: "HLW8012 Energy"
-    update_interval: 10s
+    update_interval: 30s
 
 binary_sensor:
   - platform: gpio
