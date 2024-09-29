@@ -1,0 +1,86 @@
+packages:
+  wifi: !include common/wifi.yaml
+
+esphome:
+  name: kruidvat-dual-plug-pm
+  friendly_name: Kruidvat Dual Plug PM
+
+bk72xx:
+  board: wb2s
+
+logger:
+  baud_rate: 0
+
+web_server:
+captive_portal:
+mdns:
+api:
+
+ota:
+  - platform: esphome
+
+text_sensor:
+  - platform: libretiny
+    version:
+      name: LibreTiny Version
+
+sensor:
+  - platform: hlw8012
+    model: BL0937
+    current_resistor: "0.00094637"
+    voltage_divider: "875.24" #875.4264104803493 (623 -> 233 [2351/0.001/1])
+    sel_pin:      # Selects CF1 measuring current (SEL:0) or voltage (SEL:1) 
+      number: P6
+      inverted: true
+    cf_pin:       # CF’s frequency is proportional to the (active) power measured
+      number: P8
+      inverted: true
+    cf1_pin:      # CF1's frequency is proportional to the current (SEL:0) or voltage (SEL:1) RMS value
+      number: P7
+      inverted: true
+    current:
+      name: "HLW8012 Current"
+      filters:
+        - multiply: "0.46207052577114727"
+    voltage:
+      name: "HLW8012 Voltage"
+    power:
+      name: "HLW8012 Power"
+    energy:
+      name: "HLW8012 Energy"
+    update_interval: 10s
+
+binary_sensor:
+  - platform: gpio
+    name: Button 1
+    id: binary_switch_1
+    pin:
+      number: P23
+      inverted: true
+    on_press:
+      then:
+        - switch.toggle: switch_1
+  - platform: gpio
+    name: Button 2
+    id: binary_switch_P10
+    pin:
+      number: P10
+      inverted: true
+    on_press:
+      then:
+        - switch.toggle: switch_2
+
+switch:
+  - platform: gpio
+    id: switch_1
+    name: Relay 1
+    pin: P26
+  - platform: gpio
+    id: switch_2
+    name: Relay 2
+    pin: P24
+
+status_led:
+  pin:
+    number: P11
+    inverted: true
