@@ -1,0 +1,66 @@
+packages:
+  wifi: !include common/wifi.yaml
+
+esphome:
+  name: kruidvat-dual-plug
+  friendly_name: Kruidvat Dual Plug
+
+esp8266:
+  board: esp01_1m
+  early_pin_init: false
+
+web_server:
+captive_portal:
+mdns:
+api:
+logger:
+
+ota:
+  - platform: esphome
+
+binary_sensor:
+  - platform: gpio
+    name: Button 1
+    id: binary_switch_1
+    pin:
+      number: GPIO4
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    filters:
+      - delayed_on: 100ms
+    on_press:
+      then:
+        - switch.toggle: switch_1
+  - platform: gpio
+    name: Button 2
+    id: binary_switch_2
+    pin:
+      number: GPIO13
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    filters:
+      - delayed_on: 100ms
+    on_press:
+      then:
+        - switch.toggle: switch_2
+
+
+switch:
+  - platform: gpio
+    id: switch_1
+    name: Relay 1
+    pin: GPIO12
+  - platform: gpio
+    id: switch_2
+    name: Relay 2
+    pin: GPIO15
+
+
+status_led:
+  pin:
+    number: GPIO0
+    inverted: true
