@@ -9,6 +9,9 @@ substitutions:
   sound_scan_success: "success:d=24,o=5,b=100:c,g,b"
 
 
+esp8266:
+  board: d1_mini
+
 esphome:
   name: $devicename
   friendly_name: ${friendly_name}
@@ -29,9 +32,6 @@ esphome:
         flash_length: 500ms
     - switch.turn_on: buzzer_enabled
     - switch.turn_on: led_enabled
-
-esp8266:
-  board: d1_mini
 
 packages:
   wifi: !include common/wifi.yaml

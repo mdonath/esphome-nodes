@@ -10,12 +10,12 @@ globals:
     restore_value: false
     initial_value: '100'
 
+esp8266:
+  board: d1_mini
 
 esphome:
   name: ${devicename}
   friendly_name: ${friendly_name}
-  platform: ESP8266
-  board: d1_mini
   on_boot:
     priority: -10
     then:
