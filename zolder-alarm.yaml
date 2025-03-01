@@ -13,6 +13,9 @@ packages:
   wifi: !include common/wifi.yaml
 
 
+esp8266:
+  board: d1_mini
+
 esphome:
   name: ${devicename}
   friendly_name: ${friendly_name}
@@ -39,10 +42,6 @@ esphome:
         flash_length: 1000ms
     - light.turn_off:
         id: activity_led
-
-
-esp8266:
-  board: d1_mini
 
 
 # Enable Home Assistant API
