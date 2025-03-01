@@ -103,7 +103,7 @@ binary_sensor:
             - switch.is_on: chime_active
           then:
             - switch.turn_on: relay
-            - delay: 500ms
+            - delay: !lambda 'return id(ring_duration).state;'
             - switch.turn_off: relay
  
   - platform: status
