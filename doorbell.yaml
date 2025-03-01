@@ -1,3 +1,10 @@
+globals:
+  - id: chime
+    type: bool
+    restore_value: true
+    initial_value: 'true'
+
+
 esp8266:
   board: d1_mini
 
@@ -15,7 +22,21 @@ packages:
  
 # Enable Home Assistant API
 api:
- 
+
+number:
+  - platform: template
+    id: ring_duration
+    name: Ring Duration
+    min_value: 500
+    max_value: 4000
+    step: 100
+    unit_of_measurement: "ms"
+    device_class: duration
+    restore_value: True
+    optimistic: True
+    initial_value: 1000
+
+
 time:
   - platform: homeassistant
     id: homeassistant_time
@@ -27,12 +48,6 @@ text_sensor:
 sensor:
   - platform: uptime
     name: Uptime
- 
-globals:
-  - id: chime
-    type: bool
-    restore_value: true
-    initial_value: 'true'
  
 button:
   - platform: restart
