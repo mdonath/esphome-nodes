@@ -57,6 +57,7 @@ switch:
 
 # Enable Home Assistant API
 api:
+  homeassistant_services: true
   services:
   - service: rfidreader_tag_ok
     then:
