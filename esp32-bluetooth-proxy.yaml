@@ -7,10 +7,10 @@ packages:
   always: !include common/always.yaml
 
 esphome:
-  name: esp32-bluetooth-proxy
+  name: esp32-bluetooth-proxy-eea580
   friendly_name: Bluetooth Proxy
   min_version: 2025.2.1
-  name_add_mac_suffix: true
+  name_add_mac_suffix: False
 
 esp32:
   board: esp32dev
