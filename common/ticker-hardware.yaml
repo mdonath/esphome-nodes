@@ -106,7 +106,7 @@ display:
       } else if (id(page_number).state == 5) {
         it.turn_on_off(true);
         it.printf(0,0, id(font_press), TextAlign::TOP_LEFT, "%s...", id(glob_alert_message).c_str());
-        auto scrollmode = id(scroll_mode).index_of(id(scroll_mode).state.c_str()) == 0 ? esphome::max7219digit::ScrollMode::CONTINUOUS : esphome::max7219digit::ScrollMode::STOP;
+        auto scrollmode = id(scroll_mode).index_of(id(scroll_mode).current_option()) == 0 ? esphome::max7219digit::ScrollMode::CONTINUOUS : esphome::max7219digit::ScrollMode::STOP;
         it.scroll(true, scrollmode, id(glob_alert_speed), id(scroll_delay).state, id(scroll_dwell).state);
       }
 

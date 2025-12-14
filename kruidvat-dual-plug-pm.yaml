@@ -1,5 +1,5 @@
 packages:
-  wifi: !include common/wifi.yaml
+  wifi: !include common/wifi-wb2s.yaml
 
 esphome:
   name: kruidvat-dual-plug-pm
@@ -12,7 +12,6 @@ logger:
   baud_rate: 0
 
 web_server:
-captive_portal:
 mdns:
 api:
 

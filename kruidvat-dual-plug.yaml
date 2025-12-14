@@ -10,7 +10,6 @@ esp8266:
   early_pin_init: false
 
 web_server:
-captive_portal:
 mdns:
 api:
 logger:

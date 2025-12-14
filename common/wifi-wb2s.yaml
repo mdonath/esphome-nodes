@@ -1,5 +1,4 @@
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_pass
-  min_auth_mode: WPA2
 
