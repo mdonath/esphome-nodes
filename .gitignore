@@ -2,11 +2,11 @@
 *
 */*
 !common
-!custom_components
-!custom_components/*
-!custom_components/**/*.cpp
-!custom_components/**/*.h
-!custom_components/**/*.py
+!my_components
+!my_components/*
+!my_components/**/*.cpp
+!my_components/**/*.h
+!my_components/**/*.py
 !remotes
 !*.yaml
 !*.h

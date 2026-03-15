@@ -10,7 +10,7 @@ sudo apt-get install python3.10 # of hoger
 
 Maak een venv met de geïnstalleerde versie (de standaard Python kan een lagere zijn), en activeer deze:
 ```shell
-pip3.10 -m venv venv
+python3 -m venv venv
 . venv/bin/activate
 ```
 
@@ -26,7 +26,7 @@ pip install esphome --upgrade   # (of -U)
 # Te installeren extra's:
 De nodes `klok[1-n]` doen iets met lettertypes en hebben daarvoor de library `pillow` nodig:
 ```shell
-pip install pillow==10.2.0  # nieuwer (10.3) kan op dit moment niet
+pip install pillow==11.3.0
 ```
 
 Of alle benodigde libraries in één keer:
