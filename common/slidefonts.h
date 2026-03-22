@@ -26,7 +26,7 @@ namespace esphome
 
                 }};
 
-            const SlideFontType font3 PROGMEM = {
+            const SlideFontType font3x8 PROGMEM = {
                 3,
                 8,
                 {
@@ -42,7 +42,7 @@ namespace esphome
                     {0x4F, 0x49, 0x7F}, // 9
                 }};
 
-            const SlideFontType font4 PROGMEM = {
+            const SlideFontType font4x8 PROGMEM = {
                 4,
                 8,
                 {
@@ -58,7 +58,7 @@ namespace esphome
                     {0x26, 0x49, 0x49, 0x3E}, // 9
                 }};
 
-            const SlideFontType font5 PROGMEM = {
+            const SlideFontType font5x8 PROGMEM = {
                 5,
                 8,
                 {
@@ -74,6 +74,22 @@ namespace esphome
                     {0x06, 0x49, 0x49, 0x29, 0x1E}, // 9
                 }};
 
+            const SlideFontType font5x7 PROGMEM = {
+                5,
+                7,
+                {
+                    {0x1E, 0x31, 0x2D, 0x23, 0x1E}, // 0
+                    {0x20, 0x22, 0x3F, 0x20, 0x20}, // 1
+                    {0x32, 0x29, 0x25, 0x25, 0x22}, // 2
+                    {0x12, 0x21, 0x25, 0x25, 0x1A}, // 3
+                    {0x08, 0x0C, 0x0A, 0x09, 0x3F}, // 4
+                    {0x27, 0x25, 0x25, 0x25, 0x19}, // 5
+                    {0x1E, 0x25, 0x25, 0x25, 0x18}, // 6
+                    {0x03, 0x01, 0x39, 0x05, 0x03}, // 7
+                    {0x1A, 0x25, 0x25, 0x25, 0x1A}, // 8
+                    {0x02, 0x25, 0x25, 0x15, 0x0E}, // 9
+                }};
+
             /**
              * @brief Get the font with given width
              *
@@ -85,12 +101,15 @@ namespace esphome
                 if (fontSize == 0)
                     return pacman;
                 if (fontSize == 3)
-                    return font3;
+                    return font3x8;
                 if (fontSize == 4)
-                    return font4;
+                    return font4x8;
                 if (fontSize == 5)
-                    return font5;
-                return font5;
+                    return font5x8;
+                if (fontSize == 6)
+                    return font5x7;
+                // default
+                return font5x8;
             }
 
         } // namespace slidefont

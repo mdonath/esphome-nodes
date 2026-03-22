@@ -81,7 +81,7 @@ api:
           value: !lambda 'return speed;'
       - script.execute:
           id: display_page
-          page_number: 5
+          page_number: 6
       - delay: !lambda return duration * 1000;
       - script.execute:
           id: display_page
@@ -178,7 +178,7 @@ number:
     restore_value: true
     initial_value: 1
     min_value: 0
-    max_value: 5
+    max_value: 6
     step: 1
 
     # Configure Brightness of the display [0-15]
@@ -275,7 +275,7 @@ script:
                   number.in_range:
                     id: page_number
                     above: 1
-                    below: 3
+                    below: 4
                 then:
                   - number.increment: page_number
                 else:
@@ -284,7 +284,7 @@ script:
                       value: 1
             - component.update: ticker_display
 
-    # Show page with specified number [0-5]
+    # Show page with specified number [0-6]
   - id: display_page
     parameters:
       page_number: int

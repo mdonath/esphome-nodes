@@ -54,6 +54,16 @@ namespace esphome
             }
         }
 
+        void draw_timestamp_as_bits(MAX7219Component &it, esphome::ESPTime time)
+        {
+            uint32_t timestamp = time.timestamp;
+            for (auto x = 0; x < 32; x++)
+            {
+                if (timestamp & (1UL << x))
+                    it.draw_absolute_pixel_internal(31-x, 7, Color::WHITE);
+            }
+        }
+
 
         void printStringFormatWithFont(MAX7219Component &it, int x, int y, const char *buffer, int len, int fontSize, esphome::ESPTime *time)
         {
