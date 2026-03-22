@@ -1,0 +1,87 @@
+#
+# Flashed using soldered wires.
+#
+# NOTE: Connecting to WiFi crashes when powered by USB, also when powered by external power supply. It only works when using mains power.
+#
+
+substitutions:
+  devicename: sirene
+  friendly_name: Sirene
+
+
+packages:
+  wifi: !include common/wifi-wr3.yaml
+  always: !include common/always.yaml
+
+
+esphome:
+  name: ${devicename}
+  friendly_name: ${friendly_name}
+
+
+rtl87xx:
+  board: wr3
+
+
+api:
+
+
+switch:
+  - platform: restart
+    name: Sirene Restart"
+  - platform: gpio
+    pin: PA05
+    name: "Lichtje"
+    id: Lichtje
+
+
+sensor:
+    - platform: wifi_signal
+      name: "Sirene-wifi"
+binary_sensor:
+  - platform: gpio
+    name: Sirene-PairOnOff
+    pin:
+      number: PA15
+      inverted: true
+      mode:
+        input: true
+text_sensor:
+  - platform: libretiny
+    version:
+      name: LibreTiny Version
+
+
+output:
+  - platform: libretiny_pwm
+    pin: PA12
+    frequency: 2600 Hz
+    id: pwm_output
+
+
+light:
+  - platform: monochromatic
+    output: pwm_output
+    name: "Sirene"
+    id: Sirene
+
+
+button:
+- platform: template
+  name: "Sirene-buzzer"
+  on_press:
+  - script.execute: buzzer_five
+
+
+script: 
+- id: buzzer_five # Use the same buzzer name you have given above. 
+  then:
+    - repeat:
+          count: 10
+          then:
+            - light.turn_on: Sirene
+            - switch.turn_on: Lichtje
+            - delay: 500ms                
+            - light.turn_off: Sirene
+            - switch.turn_off: Lichtje
+            - delay: 1000ms
