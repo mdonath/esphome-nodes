@@ -145,6 +145,24 @@ light:
     effects:
       - strobe:
       - lambda:
+           name: Sine
+           update_interval: 75ms
+           lambda: |-
+             static float t = 0;
+             float brightness = (sin(t) + 1.0) / 2.0;
+             auto call = id(light_green).turn_on();
+             call.set_transition_length(100);
+             call.set_brightness(brightness);
+             call.set_publish(false);
+             call.set_save(false);
+             call.perform();
+             // RESOLUTION
+             t += 0.314;
+             if (t > 6.283) {
+              t = 0;
+             }
+
+      - lambda:
           name: Heartbeat
           update_interval: 75ms
           lambda: |-
