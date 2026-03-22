@@ -3,6 +3,10 @@
 #
 # NOTE: Connecting to WiFi crashes when powered by USB, also when powered by external power supply. It only works when using mains power.
 #
+# - https://community.home-assistant.io/t/tuya-wr3-smart-siren/732731
+# - https://docs.libretiny.eu/docs/getting-started/
+# - https://developer.tuya.com/en/docs/iot/wr3-module-datasheet?id=K9g3ainzbj9z1
+#
 
 substitutions:
   devicename: sirene
