@@ -235,6 +235,17 @@ namespace esphome
             printStringFormatWithFont(it, x, y, buffer, len, fontSize, (esphome::ESPTime*) NULL);
         }
 
+        void printTimestampAsHex(MAX7219Component &it, int x, int y, esphome::ESPTime time)
+        {
+            // create string based on format
+            char buffer[64];
+            size_t len = snprintf(buffer, sizeof(buffer), "%08x", (uint32_t) time.timestamp);
+            if (len == 0)
+                return;
+
+            printStringFormatWithFont(it, x, y, buffer, len, 6, (esphome::ESPTime*) NULL);
+        }
+
         void printSlideFormatWithFont(MAX7219Component &it, int x, int y, const char *format, esphome::ESPTime time, int fontSize)
         {
             // create string based on format
@@ -254,12 +265,6 @@ namespace esphome
         void printSlideTimeWithFont(MAX7219Component &it, int x, int y, const char *format, esphome::ESPTime time, int fontSize)
         {
             printSlideFormatWithFont(it, x, y, format, time, fontSize);
-        }
-
-        void draw_timestamp_as_hex(MAX7219Component &it, esphome::ESPTime time)
-        {
-            uint32_t timestamp = time.timestamp;
-            printNumberWithFont(it, 1, 0, "%08x", timestamp, 6);
         }
 
         /**

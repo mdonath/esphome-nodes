@@ -24,16 +24,12 @@ display:
     update_interval: 67ms
     lambda: |-
       it.intensity(id(brightness).state);
+      it.turn_on_off(id(page_number).state != 0);
 
-      // Page 0: Turned off
-      if (id(page_number).state == 0) {
-        it.turn_on_off(false);
-
-      } else if (id(page_number).state == 1) {
+      if (id(page_number).state == 1) {
         //
         // Page 1: Klok with font: 5x7 and all indicators and timestamp as bits
         //
-        it.turn_on_off(true);
         printSlideFormatWithFont(it, 5, 0, "%H:%M", id(hass_time).now(), 7);
 
         draw_presence_indicators(
@@ -42,7 +38,6 @@ display:
           id(person_marjolein).state,
           id(person_abel).state
         );
-
         draw_contact_indicators(
           it,
           id(contact_voordeur).state,
@@ -54,23 +49,21 @@ display:
           id(contact_trapdeur).state,
           id(contact_achtergevel_raam).state
         );
-
         draw_timestamp_as_bits(it, id(hass_time).now());
 
       } else if (id(page_number).state == 2) {
         //
         // Page 2: Klok with font: 3x6 and timestamp as bits
         //
-        it.turn_on_off(true);
         auto time_now = id(hass_time).now();
-        draw_timestamp_as_hex(it, time_now);
+        printTimestampAsHex(it, 1, 1, time_now);
+
         draw_timestamp_as_bits(it, time_now);
 
       } else if (id(page_number).state == 3) {
         //
         // Page 3: Klok with font: 5x7 and all indicators
         //
-        it.turn_on_off(true);
         printSlideTime(it, 5, 0, id(hass_time).now());
 
         draw_presence_indicators(
@@ -96,14 +89,12 @@ display:
         //
         // Page 4: Klok with font: 4x7
         //
-        it.turn_on_off(true);
         printSlideFormatWithFont(it, 0, 0, "%H|%M|%S", id(hass_time).now(), 4);
 
       } else if (id(page_number).state == 5) {
         //
         // Page 5: Klok with font: 3x7
         //
-        it.turn_on_off(true);
         printSlideFormatWithFont(it, 4, 0, "%H:%M:%S", id(hass_time).now(), 3);
         
         draw_presence_indicators(
@@ -117,14 +108,12 @@ display:
         //
         // Page 6: Powerusage
         //
-        it.turn_on_off(true);
         printNumberWithFont(it, 0, 0, "%d", id(current_power_usage).state, 5);
 
       } else if (id(page_number).state == 7) {
         //
         // Page 7: (Not in cycle) Show alert message
         //
-        it.turn_on_off(true);
         it.printf(0,0, id(font_press), TextAlign::TOP_LEFT, "%s...", id(glob_alert_message).c_str());
         auto scrollmode = id(scroll_mode).index_of(id(scroll_mode).current_option()) == 0 ? esphome::max7219digit::ScrollMode::CONTINUOUS : esphome::max7219digit::ScrollMode::STOP;
         it.scroll(true, scrollmode, id(glob_alert_speed), id(scroll_delay).state, id(scroll_dwell).state);
