@@ -12,11 +12,14 @@ namespace esphome
             {
                 uint8_t width;
                 uint8_t height;
-                uint8_t data[10][7];
+                uint8_t numChars;
+                uint8_t data[17][7];
             };
+
             const SlideFontType pacman PROGMEM = {
                 7,
                 8,
+                5,
                 {
                     {0xFE, 0x73, 0xF3, 0x7F, 0xF3, 0x73, 0xFE}, // 0 no eyes
                     {0xFE, 0x7B, 0xF3, 0x7F, 0xFB, 0x73, 0xFE}, // 1 eyes left-down
@@ -26,9 +29,33 @@ namespace esphome
 
                 }};
 
+            const SlideFontType font3x6 PROGMEM = {
+                3,
+                6,
+                16,
+                {
+                    {0x1F, 0x11, 0x1F}, // 0
+                    {0x00, 0x1F, 0x00}, // 1
+                    {0x1D, 0x15, 0x17}, // 2
+                    {0x15, 0x15, 0x1F}, // 3
+                    {0x07, 0x04, 0x1F}, // 4
+                    {0x17, 0x15, 0x1D}, // 5
+                    {0x1F, 0x15, 0x1D}, // 6
+                    {0x01, 0x01, 0x1F}, // 7
+                    {0x1F, 0x15, 0x1F}, // 8
+                    {0x17, 0x15, 0x1F}, // 9
+                    {0x1E, 0x05, 0x1E}, // A
+                    {0x1F, 0x15, 0x0A}, // B
+                    {0x0E, 0x11, 0x11}, // C
+                    {0x1F, 0x11, 0x0E}, // D
+                    {0x1F, 0x15, 0x11}, // E
+                    {0x1F, 0x05, 0x01}  // F
+                }};
+
             const SlideFontType font3x8 PROGMEM = {
                 3,
                 8,
+                10,
                 {
                     {0x7F, 0x41, 0x7F}, // 0
                     {0x04, 0x02, 0x7F}, // 1
@@ -45,6 +72,7 @@ namespace esphome
             const SlideFontType font4x8 PROGMEM = {
                 4,
                 8,
+                10,
                 {
                     {0x3E, 0x41, 0x41, 0x3E}, // 0
                     {0x00, 0x04, 0x02, 0x7F}, // 1
@@ -61,6 +89,7 @@ namespace esphome
             const SlideFontType font5x8 PROGMEM = {
                 5,
                 8,
+                10,
                 {
                     {0x3E, 0x51, 0x49, 0x45, 0x3E}, // 0
                     {0x40, 0x42, 0x7F, 0x40, 0x40}, // 1
@@ -77,6 +106,7 @@ namespace esphome
             const SlideFontType font5x7 PROGMEM = {
                 5,
                 7,
+                10,
                 {
                     {0x1E, 0x31, 0x2D, 0x23, 0x1E}, // 0
                     {0x20, 0x22, 0x3F, 0x20, 0x20}, // 1
@@ -107,6 +137,8 @@ namespace esphome
                 if (fontSize == 5)
                     return font5x8;
                 if (fontSize == 6)
+                    return font3x6;
+                if (fontSize == 7)
                     return font5x7;
                 // default
                 return font5x8;

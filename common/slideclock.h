@@ -45,8 +45,8 @@ namespace esphome
         {
             for (auto col = 0; col < font.width; col++)
             {
-                auto col_prev = progmem_read_byte(&font.data[anim.prev % 10][col]);
-                auto col_next = progmem_read_byte(&font.data[anim.next % 10][col]);
+                auto col_prev = progmem_read_byte(&font.data[anim.prev % font.numChars][col]);
+                auto col_next = progmem_read_byte(&font.data[anim.next % font.numChars][col]);
                 auto column_data = combine_column_data(col_prev, col_next, anim.frame, direction, font);
                 for (auto row = 0; row < font.height; row++)
                     if (column_data & (1 << row))
@@ -64,6 +64,53 @@ namespace esphome
             }
         }
 
+        void draw_contact_indicators(
+                MAX7219Component &it,
+                bool contact1,
+                bool contact2,
+                bool contact3,
+                bool contact4,
+                bool contact5,
+                bool contact6,
+                bool contact7,
+                bool contact8
+        ) {
+            if (contact1) {
+                it.draw_pixel_at(31,0, COLOR_ON);
+            }
+            if (contact2) {
+                it.draw_pixel_at(31,1, COLOR_ON);
+            }
+            if (contact3) {
+                it.draw_pixel_at(31,2, COLOR_ON);
+            }
+            if (contact4) {
+                it.draw_pixel_at(31,3, COLOR_ON);
+            }
+            if (contact5) {
+                it.draw_pixel_at(31,4, COLOR_ON);
+            }
+            if (contact6) {
+                it.draw_pixel_at(31,5, COLOR_ON);
+            }
+            if (contact7) {
+                it.draw_pixel_at(31,6, COLOR_ON);
+            }
+            if (contact8) {
+                it.draw_pixel_at(31,7, COLOR_ON);
+            }
+        }
+
+        void draw_presence_indicators(
+                MAX7219Component &it,
+                std::string person1,
+                std::string person2,
+                std::string person3
+        ) {
+            it.line(0,0, (person1 == "home") ? 2 : 0,0);
+            it.line(0,2, (person2 == "home") ? 2 : 0,2);
+            it.line(0,4, (person3 == "home") ? 2 : 0,4);
+        }
 
         void printStringFormatWithFont(MAX7219Component &it, int x, int y, const char *buffer, int len, int fontSize, esphome::ESPTime *time)
         {
@@ -80,6 +127,16 @@ namespace esphome
                 {
                     current_numbers.push_back({(c - '0'), x + offset});
                     offset += font.width + 1;
+                }
+                else if (font.numChars == 16)
+                {
+                    if (c >= 'A' && c <= 'F') {
+                        current_numbers.push_back({(c - 'A' + 10) % 16, x + offset});
+                        offset += font.width + 1;
+                    } else if (c >= 'a' && c <= 'f') {
+                        current_numbers.push_back({(c - 'a' + 10) % 16, x + offset});
+                        offset += font.width + 1;
+                    }
                 }
                 else if (c == ':' || c == ';')
                 {
@@ -197,6 +254,12 @@ namespace esphome
         void printSlideTimeWithFont(MAX7219Component &it, int x, int y, const char *format, esphome::ESPTime time, int fontSize)
         {
             printSlideFormatWithFont(it, x, y, format, time, fontSize);
+        }
+
+        void draw_timestamp_as_hex(MAX7219Component &it, esphome::ESPTime time)
+        {
+            uint32_t timestamp = time.timestamp;
+            printNumberWithFont(it, 1, 0, "%08x", timestamp, 6);
         }
 
         /**

@@ -29,118 +29,101 @@ display:
       if (id(page_number).state == 0) {
         it.turn_on_off(false);
 
-      // Page 1: Klok with font: 5x7 and all indicators
       } else if (id(page_number).state == 1) {
+        //
+        // Page 1: Klok with font: 5x7 and all indicators and timestamp as bits
+        //
         it.turn_on_off(true);
-        // printSlideTime(it, 5, 0, id(hass_time).now());
-        printSlideFormatWithFont(it, 5, 0, "%H:%M", id(hass_time).now(), 6);
+        printSlideFormatWithFont(it, 5, 0, "%H:%M", id(hass_time).now(), 7);
 
-        it.line(0,0, (id(person_martijn).state == "home") ? 2 : 0,0);
-        it.line(0,2, (id(person_marjolein).state == "home") ? 2 : 0,2);
-        it.line(0,4, (id(person_abel).state == "home") ? 2 : 0,4);
+        draw_presence_indicators(
+          it,
+          id(person_martijn).state,
+          id(person_marjolein).state,
+          id(person_abel).state
+        );
 
-        if (id(internet_marjolein).state == "off") {
-          it.draw_pixel_at(1,2, COLOR_OFF);
-        }
-        if (id(internet_abel).state == "off") {
-          it.draw_pixel_at(1,4, COLOR_OFF);
-        }
-
-        if (id(contact_voordeur).state) {
-          it.draw_pixel_at(31,0, COLOR_ON);
-        }
-        if (id(contact_achterdeur).state) {
-          it.draw_pixel_at(31,1, COLOR_ON);
-        }
-        if (id(contact_raam_martijn).state) {
-          it.draw_pixel_at(31,2, COLOR_ON);
-        }
-        if (id(contact_raam_abel).state) {
-          it.draw_pixel_at(31,3, COLOR_ON);
-        }
-        if (id(contact_raam_marjolein).state) {
-          it.draw_pixel_at(31,4, COLOR_ON);
-        }
-        if (id(contact_bergingdeur).state) {
-          it.draw_pixel_at(31,5, COLOR_ON);
-        }
-        if (id(contact_trapdeur).state) {
-          it.draw_pixel_at(31,6, COLOR_ON);
-        }
-        if (id(contact_achtergevel_raam).state) {
-          it.draw_pixel_at(31,7, COLOR_ON);
-        }
+        draw_contact_indicators(
+          it,
+          id(contact_voordeur).state,
+          id(contact_achterdeur).state,
+          id(contact_raam_martijn).state,
+          id(contact_raam_abel).state,
+          id(contact_raam_marjolein).state,
+          id(contact_bergingdeur).state,
+          id(contact_trapdeur).state,
+          id(contact_achtergevel_raam).state
+        );
 
         draw_timestamp_as_bits(it, id(hass_time).now());
 
-      // Page 2: Klok with font: 5x7 and all indicators
       } else if (id(page_number).state == 2) {
+        //
+        // Page 2: Klok with font: 3x6 and timestamp as bits
+        //
+        it.turn_on_off(true);
+        auto time_now = id(hass_time).now();
+        draw_timestamp_as_hex(it, time_now);
+        draw_timestamp_as_bits(it, time_now);
+
+      } else if (id(page_number).state == 3) {
+        //
+        // Page 3: Klok with font: 5x7 and all indicators
+        //
         it.turn_on_off(true);
         printSlideTime(it, 5, 0, id(hass_time).now());
 
-        it.line(0,0, (id(person_martijn).state == "home") ? 2 : 0,0);
-        it.line(0,2, (id(person_marjolein).state == "home") ? 2 : 0,2);
-        it.line(0,4, (id(person_abel).state == "home") ? 2 : 0,4);
+        draw_presence_indicators(
+          it,
+          id(person_martijn).state,
+          id(person_marjolein).state,
+          id(person_abel).state
+        );
 
-        if (id(internet_marjolein).state == "off") {
-          it.draw_pixel_at(1,2, COLOR_OFF);
-        }
-        if (id(internet_abel).state == "off") {
-          it.draw_pixel_at(1,4, COLOR_OFF);
-        }
+        draw_contact_indicators(
+          it,
+          id(contact_voordeur).state,
+          id(contact_achterdeur).state,
+          id(contact_raam_martijn).state,
+          id(contact_raam_abel).state,
+          id(contact_raam_marjolein).state,
+          id(contact_bergingdeur).state,
+          id(contact_trapdeur).state,
+          id(contact_achtergevel_raam).state
+        );
 
-        if (id(contact_voordeur).state) {
-          it.draw_pixel_at(31,0, COLOR_ON);
-        }
-        if (id(contact_achterdeur).state) {
-          it.draw_pixel_at(31,1, COLOR_ON);
-        }
-        if (id(contact_raam_martijn).state) {
-          it.draw_pixel_at(31,2, COLOR_ON);
-        }
-        if (id(contact_raam_abel).state) {
-          it.draw_pixel_at(31,3, COLOR_ON);
-        }
-        if (id(contact_raam_marjolein).state) {
-          it.draw_pixel_at(31,4, COLOR_ON);
-        }
-        if (id(contact_bergingdeur).state) {
-          it.draw_pixel_at(31,5, COLOR_ON);
-        }
-        if (id(contact_trapdeur).state) {
-          it.draw_pixel_at(31,6, COLOR_ON);
-        }
-        if (id(contact_achtergevel_raam).state) {
-          it.draw_pixel_at(31,7, COLOR_ON);
-        }
-
-      // Page 3: Klok with font: 4x7
-      } else if (id(page_number).state == 3) {
+      } else if (id(page_number).state == 4) {
+        //
+        // Page 4: Klok with font: 4x7
+        //
         it.turn_on_off(true);
         printSlideFormatWithFont(it, 0, 0, "%H|%M|%S", id(hass_time).now(), 4);
 
-      // Page 4: Klok with font: 3x7
-      } else if (id(page_number).state == 4) {
+      } else if (id(page_number).state == 5) {
+        //
+        // Page 5: Klok with font: 3x7
+        //
         it.turn_on_off(true);
         printSlideFormatWithFont(it, 4, 0, "%H:%M:%S", id(hass_time).now(), 3);
         
-        it.line(0,0, (id(person_martijn).state == "home") ? 2 : 0,0);
-        it.line(0,2, (id(person_marjolein).state == "home") ? 2 : 0,2);
-        it.line(0,4, (id(person_abel).state == "home") ? 2 : 0,4);
-        if (id(internet_marjolein).state == "off") {
-          it.draw_pixel_at(1,2, COLOR_OFF);
-        }
-        if (id(internet_abel).state == "off") {
-          it.draw_pixel_at(1,4, COLOR_OFF);
-        }
+        draw_presence_indicators(
+          it,
+          id(person_martijn).state,
+          id(person_marjolein).state,
+          id(person_abel).state
+        );
 
-      // Page 5: Powerusage
-      } else if (id(page_number).state == 5) {
+      } else if (id(page_number).state == 6) {
+        //
+        // Page 6: Powerusage
+        //
         it.turn_on_off(true);
         printNumberWithFont(it, 0, 0, "%d", id(current_power_usage).state, 5);
 
-      // Page 6: (Not in cycle) Show alert message
-      } else if (id(page_number).state == 6) {
+      } else if (id(page_number).state == 7) {
+        //
+        // Page 7: (Not in cycle) Show alert message
+        //
         it.turn_on_off(true);
         it.printf(0,0, id(font_press), TextAlign::TOP_LEFT, "%s...", id(glob_alert_message).c_str());
         auto scrollmode = id(scroll_mode).index_of(id(scroll_mode).current_option()) == 0 ? esphome::max7219digit::ScrollMode::CONTINUOUS : esphome::max7219digit::ScrollMode::STOP;
