@@ -22,6 +22,9 @@ packages:
  
 # Enable Home Assistant API
 api:
+  encryption:
+    key: !secret doorbell_api_encryption_key
+
 
 number:
   - platform: template

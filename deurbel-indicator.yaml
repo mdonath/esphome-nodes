@@ -71,6 +71,8 @@ select:
 
 # Enable Home Assistant API
 api:
+  encryption:
+    key: !secret deurbel_indicator_api_encryption_key
   # Define services to use from HA
   services:
 

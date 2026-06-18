@@ -5,3 +5,7 @@ substitutions:
 
 packages:
   ticker: !include common/ticker-common.yaml
+
+api:
+  encryption:
+    key: !secret klok1_api_encryption_key

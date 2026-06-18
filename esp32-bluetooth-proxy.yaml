@@ -18,6 +18,8 @@ esp32:
     type: esp-idf
 
 api:
+  encryption:
+    key: !secret esp32_bluetooth_proxy_api_encryption_key
 
 esp32_ble_tracker:
   scan_parameters:
