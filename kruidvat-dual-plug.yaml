@@ -12,6 +12,8 @@ esp8266:
 web_server:
 mdns:
 api:
+  encryption:
+    key: !secret kruidvat_dual_plug_api_encryption_key
 logger:
 
 ota:

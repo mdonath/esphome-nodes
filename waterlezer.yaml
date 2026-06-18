@@ -12,4 +12,4 @@ esphome:
 
 api:
   encryption:
-    key: aeB2W3aw/6dAnqYp4JXV89abcvTHko8QGpcRVQn/y3E=
+    key: !secret waterlezer_api_encryption_key

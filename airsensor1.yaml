@@ -7,17 +7,26 @@ packages:
   wifi: !include common/wifi.yaml
   always: !include common/always.yaml
 
-esphome:
-  name: ${devicename}
-  platform: ESP8266
+
+esp8266:
   board: d1_mini
 
+
+esphome:
+  name: ${devicename}
+  friendly_name: ${friendly_name}
+
+
 api:
+  encryption:
+    key: !secret airsensor1_api_encryption_key
+
 
 # Ikea Vindriktning PM2.5 sensor
 uart:
   rx_pin: D2
   baud_rate: 9600
+
 
 sensor:
   - platform: pm1006

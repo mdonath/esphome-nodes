@@ -46,6 +46,8 @@ esphome:
 
 # Enable Home Assistant API
 api:
+  encryption:
+    key: !secret zolder_alarm_api_encryption_key
   services:
     # Service to play RTTTL
     - service: play_rtttl

@@ -13,7 +13,10 @@ logger:
 
 web_server:
 mdns:
+
 api:
+  encryption:
+    key: !secret kruidvat_dual_plug_pm_api_encryption_key
 
 ota:
   - platform: esphome

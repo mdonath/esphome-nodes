@@ -57,6 +57,8 @@ switch:
 
 # Enable Home Assistant API
 api:
+  encryption:
+    key: !secret tagreader_api_encryption_key
   homeassistant_services: true
   services:
   - service: rfidreader_tag_ok

@@ -28,6 +28,8 @@ rtl87xx:
 
 
 api:
+  encryption:
+    key: !secret sirene_api_encryption_key
 
 
 switch:
