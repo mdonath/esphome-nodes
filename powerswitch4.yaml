@@ -1,0 +1,12 @@
+substitutions:
+  devicename: powerswitch4
+  friendly_name: Sonoff Powerswitch 4
+
+
+packages:
+  sonoff: !include common/sonoff-basic.yaml
+
+
+api:
+    encryption:
+        key: !secret powerswitch4_api_encryption_key

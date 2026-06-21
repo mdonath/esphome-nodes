@@ -1,0 +1,43 @@
+packages:
+  wifi: !include wifi.yaml
+  always: !include always.yaml
+
+
+esphome:
+  name: $devicename
+
+
+esp8266:
+  board: esp01_1m
+
+
+binary_sensor:
+  - platform: gpio
+    name: Button
+    id: button
+    pin:
+      number: GPIO0
+      mode: INPUT_PULLUP
+      inverted: True
+    on_press:
+      - switch.toggle: relay
+
+
+switch:
+  - platform: gpio
+    name: Switch
+    pin: GPIO12
+    id: relay
+    on_turn_on:
+        - light.turn_on: stat_led
+    on_turn_off:
+        - light.turn_off: stat_led
+
+
+light:
+  - platform: status_led
+    id: stat_led
+    name: Status LED
+    pin:
+      number: GPIO13
+      inverted: True
