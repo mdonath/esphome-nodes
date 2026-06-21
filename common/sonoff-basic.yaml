@@ -4,7 +4,8 @@ packages:
 
 
 esphome:
-  name: $devicename
+  name: ${devicename}
+  friendly_name: ${friendly_name}
 
 
 esp8266:
