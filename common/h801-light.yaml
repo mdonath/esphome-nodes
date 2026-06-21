@@ -1,7 +1,7 @@
 light:
   - platform: rgb
     id: ledstrip
-    name: "${friendly_name} Led Strip"
-    red: pwm_r
-    green: pwm_g
-    blue: pwm_b
+    name: Led Strip
+    red: pwm_red
+    green: pwm_green
+    blue: pwm_blue

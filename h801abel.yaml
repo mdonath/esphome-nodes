@@ -2,22 +2,29 @@ substitutions:
   devicename: h801abel
   friendly_name: H801 Abel
 
+
 esphome:
   includes:
     - common/light_functions.h
     - remotes/remote_abel.h
 
+
 packages:
-  h801: !include common/h801.yaml
+  h801: !include common/h801-common.yaml
+
+
+api:
+  encryption:
+    key: !secret h801abel_api_encryption_key
 
 
 light:
   - platform: rgb
     id: ledstrip
     name: "${friendly_name} Led Strip"
-    red: pwm_r
-    green: pwm_g
-    blue: pwm_b
+    red: pwm_red
+    green: pwm_green
+    blue: pwm_blue
     effects:
       - strobe:
           name: Flash van Ledstrip
@@ -50,6 +57,7 @@ light:
       - random
       - pulse
       - flicker
+
 
 remote_receiver:
   pin:

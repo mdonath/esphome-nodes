@@ -2,22 +2,29 @@ substitutions:
   devicename: h801martijn
   friendly_name: H801 Martijn
 
+
 esphome:
   includes:
     - common/light_functions.h
     - remotes/remote_grundig.h
 
+
 packages:
-  h801: !include common/h801.yaml
+  h801: !include common/h801-common.yaml
+
+
+api:
+  encryption:
+    key: !secret h801martijn_api_encryption_key
 
 
 light:
   - platform: rgb
     id: ledstrip
-    name: "${friendly_name} Led Strip"
-    red: pwm_r
-    green: pwm_g
-    blue: pwm_b
+    name: "Led Strip"
+    red: pwm_red
+    green: pwm_green
+    blue: pwm_blue
     effects:
       - strobe:
           name: Flash van Ledstrip

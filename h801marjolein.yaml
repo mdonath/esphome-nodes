@@ -2,6 +2,12 @@ substitutions:
   devicename: h801marjolein
   friendly_name: H801 Marjolein
 
+
 packages:
-  h801: !include common/h801.yaml
+  h801: !include common/h801-common.yaml
   h801light: !include common/h801-light.yaml
+
+
+api:
+  encryption:
+    key: !secret h801marjolein_api_encryption_key
