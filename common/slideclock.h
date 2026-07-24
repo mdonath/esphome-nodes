@@ -104,15 +104,13 @@ namespace esphome
         void draw_presence_indicators(
                 MAX7219Component &it,
                 std::string person1,
-                std::string person2,
-                std::string person3
+                std::string person2
         ) {
             it.line(0,0, (person1 == "home") ? 2 : 0,0);
             it.line(0,2, (person2 == "home") ? 2 : 0,2);
-            it.line(0,4, (person3 == "home") ? 2 : 0,4);
         }
 
-        void printStringFormatWithFont(MAX7219Component &it, int x, int y, const char *buffer, int len, int fontSize, esphome::ESPTime *time)
+        void printStringFormatWithFont(MAX7219Component &it, int x, int y, const char *buffer, int len, slidefont::SlideFontEnum fontSize, esphome::ESPTime *time)
         {
             // get font data
             slidefont::SlideFontType font = slidefont::getFont(fontSize);
@@ -224,7 +222,7 @@ namespace esphome
             }
         }
 
-        void printNumberWithFont(MAX7219Component &it, int x, int y, const char *format, int number, int fontSize)
+        void printNumberWithFont(MAX7219Component &it, int x, int y, const char *format, int number, slidefont::SlideFontEnum fontSize)
         {
             // create string based on format
             char buffer[64];
@@ -243,10 +241,10 @@ namespace esphome
             if (len == 0)
                 return;
 
-            printStringFormatWithFont(it, x, y, buffer, len, 6, (esphome::ESPTime*) NULL);
+            printStringFormatWithFont(it, x, y, buffer, len, slidefont::SlideFontEnum::FONT_3X6, (esphome::ESPTime*) NULL);
         }
 
-        void printSlideFormatWithFont(MAX7219Component &it, int x, int y, const char *format, esphome::ESPTime time, int fontSize)
+        void printSlideFormatWithFont(MAX7219Component &it, int x, int y, const char *format, esphome::ESPTime time, slidefont::SlideFontEnum fontSize)
         {
             // create string based on format
             char buffer[64];
@@ -259,10 +257,10 @@ namespace esphome
 
         void printSlideFormat(MAX7219Component &it, int x, int y, const char *format, esphome::ESPTime time)
         {
-            printSlideFormatWithFont(it, x, y, format, time, 5);
+            printSlideFormatWithFont(it, x, y, format, time, slidefont::SlideFontEnum::FONT_5X8);
         }
 
-        void printSlideTimeWithFont(MAX7219Component &it, int x, int y, const char *format, esphome::ESPTime time, int fontSize)
+        void printSlideTimeWithFont(MAX7219Component &it, int x, int y, const char *format, esphome::ESPTime time, slidefont::SlideFontEnum fontSize)
         {
             printSlideFormatWithFont(it, x, y, format, time, fontSize);
         }
@@ -292,7 +290,7 @@ namespace esphome
          */
         void printSlideTime(MAX7219Component &it, int x, int y, esphome::ESPTime time)
         {
-            printSlideTimeWithFont(it, x, y, "%H;%M", time, 5);
+            printSlideTimeWithFont(it, x, y, "%H;%M", time, slidefont::SlideFontEnum::FONT_5X8);
         }
 
     } // namespace max7219digit

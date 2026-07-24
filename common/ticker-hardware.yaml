@@ -26,16 +26,16 @@ display:
       it.intensity(id(brightness).state);
       it.turn_on_off(id(page_number).state != 0);
 
+      auto time_now = id(hass_time).now();
       if (id(page_number).state == 1) {
         //
         // Page 1: Klok with font: 5x7 and all indicators and timestamp as bits
         //
-        printSlideFormatWithFont(it, 5, 0, "%H:%M", id(hass_time).now(), 7);
+        printSlideFormatWithFont(it, 4, 0, "%H:%M", time_now, esphome::max7219digit::slidefont::SlideFontEnum::FONT_5X7);
 
         draw_presence_indicators(
           it,
           id(person_martijn).state,
-          id(person_marjolein).state,
           id(person_abel).state
         );
         draw_contact_indicators(
@@ -49,13 +49,13 @@ display:
           id(contact_trapdeur).state,
           id(contact_achtergevel_raam).state
         );
-        draw_timestamp_as_bits(it, id(hass_time).now());
+        draw_timestamp_as_bits(it, time_now);
 
       } else if (id(page_number).state == 2) {
         //
         // Page 2: Klok with font: 3x6 and timestamp as bits
         //
-        auto time_now = id(hass_time).now();
+        
         printTimestampAsHex(it, 1, 1, time_now);
 
         draw_timestamp_as_bits(it, time_now);
@@ -64,12 +64,11 @@ display:
         //
         // Page 3: Klok with font: 5x7 and all indicators
         //
-        printSlideTime(it, 5, 0, id(hass_time).now());
+        printSlideTime(it, 5, 0, time_now);
 
         draw_presence_indicators(
           it,
           id(person_martijn).state,
-          id(person_marjolein).state,
           id(person_abel).state
         );
 
@@ -89,18 +88,17 @@ display:
         //
         // Page 4: Klok with font: 4x7
         //
-        printSlideFormatWithFont(it, 0, 0, "%H|%M|%S", id(hass_time).now(), 4);
+        printSlideFormatWithFont(it, 0, 0, "%H|%M|%S", time_now, esphome::max7219digit::slidefont::SlideFontEnum::FONT_4X8);
 
       } else if (id(page_number).state == 5) {
         //
         // Page 5: Klok with font: 3x7
         //
-        printSlideFormatWithFont(it, 4, 0, "%H:%M:%S", id(hass_time).now(), 3);
-        
+        printSlideFormatWithFont(it, 4, 0, "%H:%M:%S", time_now, esphome::max7219digit::slidefont::SlideFontEnum::FONT_3X8);
+
         draw_presence_indicators(
           it,
           id(person_martijn).state,
-          id(person_marjolein).state,
           id(person_abel).state
         );
 
@@ -108,7 +106,7 @@ display:
         //
         // Page 6: Powerusage
         //
-        printNumberWithFont(it, 0, 0, "%d", id(current_power_usage).state, 5);
+        printNumberWithFont(it, 0, 0, "%d", id(current_power_usage).state, esphome::max7219digit::slidefont::SlideFontEnum::FONT_5X8);
 
       } else if (id(page_number).state == 7) {
         //

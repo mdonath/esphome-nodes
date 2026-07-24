@@ -8,6 +8,16 @@ namespace esphome
     {
         namespace slidefont
         {
+            enum SlideFontEnum
+            {
+                FONT_PACMAN = 0,
+                FONT_3X6 = 6,
+                FONT_3X8 = 3,
+                FONT_4X8 = 4,
+                FONT_5X8 = 5,
+                FONT_5X7 = 7
+            };
+
             struct SlideFontType
             {
                 uint8_t width;
@@ -121,27 +131,27 @@ namespace esphome
                 }};
 
             /**
-             * @brief Get the font with given width
+             * @brief Get the font with given type
              *
-             * @param fontSize Possible fontSizes: 3, 4, 5
+             * @param font Possible fontSizes: 3, 4, 5
              * @return SlideFontType
              */
-            SlideFontType getFont(int fontSize)
-            {
-                if (fontSize == 0)
-                    return pacman;
-                if (fontSize == 3)
-                    return font3x8;
-                if (fontSize == 4)
-                    return font4x8;
-                if (fontSize == 5)
-                    return font5x8;
-                if (fontSize == 6)
-                    return font3x6;
-                if (fontSize == 7)
-                    return font5x7;
-                // default
-                return font5x8;
+            SlideFontType getFont(SlideFontEnum font) {
+                switch (font) {
+                    case FONT_PACMAN:
+                        return pacman;
+                    case FONT_3X6:
+                        return font3x6;
+                    case FONT_3X8:
+                        return font3x8;
+                    case FONT_4X8:
+                        return font4x8;
+                    case FONT_5X7:
+                        return font5x7;
+                    case FONT_5X8:
+                    default:
+                        return font5x8;
+                }
             }
 
         } // namespace slidefont

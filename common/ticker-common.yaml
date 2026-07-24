@@ -143,10 +143,6 @@ text_sensor:
     internal: True
     entity_id: person.martijn_donath
   - platform: homeassistant
-    id: person_marjolein
-    internal: True
-    entity_id: person.marjolein
-  - platform: homeassistant
     id: person_abel
     internal: True
     entity_id: person.abel
