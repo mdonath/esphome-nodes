@@ -2,4 +2,5 @@ mqtt:
   broker: !secret mqtt_broker             
   username: !secret mqtt_username                     
   password: !secret mqtt_password
+  discovery_unique_id_generator: mac
 
