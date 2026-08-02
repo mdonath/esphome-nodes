@@ -1,15 +1,20 @@
-esphome:
-  name: lichtsterkte
+substitutions:
+  device_name: lichtsterkte
   friendly_name: Lichtsterkte
+  ota_password: !secret lichtsterkte_ota_password
+  api_encryption_key: !secret lichtsterkte_api_encryption_key
 
-esp8266:
-  board: d1_mini
 
 packages:
   wifi: !include common/wifi.yaml
   always: !include common/always.yaml
 
-api:
+
+esphome:
+
+
+esp8266:
+  board: d1_mini
 
 i2c:
   scan: False

@@ -1,13 +1,13 @@
 import esphome.codegen as cg
-import esphome.config_validation as cv
 from esphome.components import display, spi
+import esphome.config_validation as cv
 from esphome.const import CONF_ID, CONF_INTENSITY, CONF_LAMBDA, CONF_NUM_CHIPS, CONF_INDEX
 
-# AUTO_LOAD = ["max7219"]
+# AUTO_LOAD = ["max7219_mapped"]
 
 DEPENDENCIES = ["spi"]
 
-max7219_ns = cg.esphome_ns.namespace("max7219")
+max7219_ns = cg.esphome_ns.namespace("components::max7219_mapped")
 MAX7219MappedComponent = max7219_ns.class_(
     "MAX7219MappedComponent", cg.PollingComponent, spi.SPIDevice
 )
@@ -31,12 +31,11 @@ CONFIG_SCHEMA = (
 
 
 async def to_code(config):
-    var = cg.new_Pvariable(config[CONF_ID])
-    await cg.register_component(var, config)
-    await spi.register_spi_device(var, config)
+    var = cg.new_Pvariable(config[CONF_ID], config[CONF_NUM_CHIPS])
+    await spi.register_spi_device(var, config, write_only=True)
     await display.register_display(var, config)
 
-    cg.add(var.set_num_chips(config[CONF_NUM_CHIPS]))
+    # cg.add(var.set_num_chips(config[CONF_NUM_CHIPS]))
     cg.add(var.set_intensity(config[CONF_INTENSITY]))
     cg.add(var.set_reverse(config[CONF_REVERSE_ENABLE]))
     if CONF_INDEX in config:

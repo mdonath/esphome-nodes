@@ -1,30 +1,48 @@
+substitutions:
+  device_name: kruidvat-dual-plug-pm
+  friendly_name: Kruidvat Dual Plug PM
+  ota_password: !secret kruidvat_dual_plug_pm_ota_password
+  api_encryption_key: !secret kruidvat_dual_plug_pm_api_encryption_key
+
+
 packages:
   wifi: !include common/wifi-wb2s.yaml
 
+
 esphome:
-  name: kruidvat-dual-plug-pm
-  friendly_name: Kruidvat Dual Plug PM
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+
 
 bk72xx:
   board: wb2s
 
+
 logger:
   baud_rate: 0
 
+
 web_server:
+
+
 mdns:
+
 
 api:
   encryption:
-    key: !secret kruidvat_dual_plug_pm_api_encryption_key
+    key: ${api_encryption_key}
+
 
 ota:
   - platform: esphome
+    password: ${ota_password}
+
 
 text_sensor:
   - platform: libretiny
     version:
       name: LibreTiny Version
+
 
 sensor:
   - platform: hlw8012
@@ -52,6 +70,7 @@ sensor:
       name: "HLW8012 Energy"
     update_interval: 30s
 
+
 binary_sensor:
   - platform: gpio
     name: Button 1
@@ -72,6 +91,7 @@ binary_sensor:
       then:
         - switch.toggle: switch_2
 
+
 switch:
   - platform: gpio
     id: switch_1
@@ -81,6 +101,7 @@ switch:
     id: switch_2
     name: Relay 2
     pin: P24
+
 
 status_led:
   pin:

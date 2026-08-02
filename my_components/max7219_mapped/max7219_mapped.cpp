@@ -3,8 +3,7 @@
 #include "esphome/core/helpers.h"
 #include "esphome/core/hal.h"
  
-namespace esphome {
-namespace max7219 {
+namespace esphome::components::max7219_mapped {
  
 static const char *const TAG = "max7219";
 
@@ -113,15 +112,26 @@ const uint8_t MAX7219_ASCII_TO_RAW[95] PROGMEM = {
     0b00000111,            // '}', ord 0x7D
     0b01100011,            // '~', ord 0x7E (degree symbol)
 };
- 
-float MAX7219MappedComponent::get_setup_priority() const { return setup_priority::PROCESSOR; }
-void MAX7219MappedComponent::setup() {
-    ESP_LOGCONFIG(TAG, "Setting up MAX7219...");
-    this->spi_setup();
-    this->buffer_ = new uint8_t[this->num_chips_ * 8];  // NOLINT
-    for (uint8_t i = 0; i < this->num_chips_ * 8; i++)
-        this->buffer_[i] = 0;
 
+// Custom additions:
+
+void MAX7219MappedComponent::set_mapping(std::initializer_list<uint8_t> mapping) {
+    std::copy(mapping.begin(), mapping.end(), this->map_);
+    this->has_map_ = true;
+}
+
+// End of custom additions
+
+
+float MAX7219MappedComponent::get_setup_priority() const { return setup_priority::PROCESSOR; }
+
+MAX7219MappedComponent::MAX7219MappedComponent(uint8_t num_chips) : num_chips_(num_chips) {
+    this->buffer_ = new uint8_t[this->num_chips_ * 8];  // NOLINT
+    memset(this->buffer_, 0, this->num_chips_ * 8);
+}
+
+void MAX7219MappedComponent::setup() {
+    this->spi_setup();
     // let's assume the user has all 8 digits connected, only important in daisy chained setups anyway
     this->send_to_all_(MAX7219_REGISTER_SCAN_LIMIT, 7);
     // let's use our own ASCII -> led pattern encoding
@@ -132,72 +142,86 @@ void MAX7219MappedComponent::setup() {
     this->send_to_all_(MAX7219_REGISTER_TEST, 0);
     this->send_to_all_(MAX7219_REGISTER_SHUTDOWN, 1);
 }
+
 void MAX7219MappedComponent::dump_config() {
-    ESP_LOGCONFIG(TAG, "MAX7219:");
-    ESP_LOGCONFIG(TAG, "  Number of Chips: %u", this->num_chips_);
-    ESP_LOGCONFIG(TAG, "  Intensity: %u", this->intensity_);
+    ESP_LOGCONFIG(TAG,
+                "MAX7219:\n"
+                "  Number of Chips: %u\n"
+                "  Intensity: %u",
+                this->num_chips_, this->intensity_);
     LOG_PIN("  CS Pin: ", this->cs_);
     LOG_UPDATE_INTERVAL(this);
-}
-
-void MAX7219MappedComponent::set_mapping(std::initializer_list<uint8_t> mapping) {
-    std::copy(mapping.begin(), mapping.end(), this->map_);
-    this->has_map_ = true;
 }
 
 void MAX7219MappedComponent::display() {
     for (uint8_t i = 0; i < 8; i++) {
         this->enable();
-        for (uint8_t j = 0; j < this->num_chips_; j++)
-            if (reverse_)
+        for (uint8_t j = 0; j < this->num_chips_; j++) {
+            if (reverse_) {
                 this->send_byte_(8 - i, buffer_[(num_chips_ - j - 1) * 8 + i]);
-            else
+            } else {
                 this->send_byte_(8 - i, buffer_[j * 8 + i]);
+            }
+        }
         this->disable();
     }
 }
+
 void MAX7219MappedComponent::send_byte_(uint8_t a_register, uint8_t data) {
     this->write_byte(a_register);
     this->write_byte(data);
 }
+
 void MAX7219MappedComponent::send_to_all_(uint8_t a_register, uint8_t data) {
     this->enable();
     for (uint8_t i = 0; i < this->num_chips_; i++)
         this->send_byte_(a_register, data);
     this->disable();
 }
+
 void MAX7219MappedComponent::update() {
-    for (uint8_t i = 0; i < this->num_chips_ * 8; i++)
-        this->buffer_[i] = 0;
-    if (this->writer_.has_value())
-        (*this->writer_)(*this);
-    this->display();
+  if (this->intensity_changed_) {
+    this->send_to_all_(MAX7219_REGISTER_INTENSITY, this->intensity_);
+    this->intensity_changed_ = false;
+  }
+  for (uint8_t i = 0; i < this->num_chips_ * 8; i++)
+    this->buffer_[i] = 0;
+  if (this->writer_.has_value())
+    (*this->writer_)(*this);
+  this->display();
 }
 
 uint8_t MAX7219MappedComponent::print(uint8_t start_pos, const char *str) {
-    uint8_t pos = start_pos;
-    for (; *str != '\0'; str++) {
-        uint8_t data = MAX7219_UNKNOWN_CHAR;
-        if (*str >= ' ' && *str <= '~')
-            data = progmem_read_byte(&MAX7219_ASCII_TO_RAW[*str - ' ']);
+  uint8_t pos = start_pos;
+  for (; *str != '\0'; str++) {
+    uint8_t data = MAX7219_UNKNOWN_CHAR;
+    if (*str >= ' ' && *str <= '~')
+      data = progmem_read_byte(&MAX7219_ASCII_TO_RAW[*str - ' ']);
  
-        if (data == MAX7219_UNKNOWN_CHAR) {
-            ESP_LOGW(TAG, "Encountered character '%c' with no MAX7219 representation while translating string!", *str);
-        }
-        if (pos >= this->num_chips_ * 8) {
-            ESP_LOGE(TAG, "MAX7219 String is too long for the display!");
-            break;
-        }
+    if (data == MAX7219_UNKNOWN_CHAR) {
+      ESP_LOGW(TAG, "Encountered character '%c' with no MAX7219 representation while translating string!", *str);
+    }
+    if (*str == '.') {
+      if (pos != start_pos)
+        pos--;
+      this->buffer_[pos] |= 0b10000000;
+    } else {
+      if (pos >= this->num_chips_ * 8) {
+        ESP_LOGE(TAG, "MAX7219 String is too long for the display!");
+        break;
+      }
+      // Custom addition: Use mapping if available
         uint8_t index = this->has_map_ ? this->map_[pos] : pos;
         this->buffer_[index] = data;
         if ((str[1]) != '\0' && (str[1]) == '.') {
             this->buffer_[index] |= 0b10000000;
             str++;
         }
-        pos++;
     }
-    return pos - start_pos;
- }
+    pos++;
+  }
+  return pos - start_pos;
+}
 
 uint8_t MAX7219MappedComponent::print(const char *str) { return this->print(0, str); }
 uint8_t MAX7219MappedComponent::printf(uint8_t pos, const char *format, ...) {
@@ -227,18 +251,14 @@ void MAX7219MappedComponent::set_intensity(uint8_t intensity) {
     this->intensity_ = intensity;
     this->send_to_all_(MAX7219_REGISTER_INTENSITY, this->intensity_);
 }
-void MAX7219MappedComponent::set_num_chips(uint8_t num_chips) { this->num_chips_ = num_chips; }
  
-#ifdef USE_TIME
-uint8_t MAX7219MappedComponent::strftime(uint8_t pos, const char *format, time::ESPTime time) {
+uint8_t MAX7219MappedComponent::strftime(uint8_t pos, const char *format, ESPTime time) {
     char buffer[64];
     size_t ret = time.strftime(buffer, sizeof(buffer), format);
     if (ret > 0)
         return this->print(pos, buffer);
     return 0;
 }
-uint8_t MAX7219MappedComponent::strftime(const char *format, time::ESPTime time) { return this->strftime(0, format, time); }
-#endif
+uint8_t MAX7219MappedComponent::strftime(const char *format, ESPTime time) { return this->strftime(0, format, time); }
  
-}  // namespace max7219
-}  // namespace esphome
+}  // namespace esphome::components::max7219_mapped

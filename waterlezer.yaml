@@ -1,15 +1,129 @@
 substitutions:
-  name: waterlezer
+  device_name: waterlezer
+  friendly_name: Waterlezer
+  ota_password: !secret waterlezer_ota_password
+  api_encryption_key: !secret waterlezer_api_encryption_key
+
 
 packages:
-  smartstuff.waterlezer: github://mhendriks/esphome-p1/waterlezer.yaml
   always: !include common/always.yaml
   wifi: !include common/wifi.yaml
-  
+
+
 esphome:
-  name: ${name}
-  name_add_mac_suffix: false
+  comment: "Water meter sensor" 
+  platformio_options:
+    upload_speed: 1500000 #921600 
+  
+  project:
+    name: smartstuff.waterlezer
+    version: "v26.02.01"
+
+
+esp8266:
+  board: esp12e
+  restore_from_flash: true
+
+
+status_led:
+  pin:
+    number: 2
+    inverted: true
+
+
+web_server:
+
+
+logger:
+  level: INFO
+
 
 api:
-  encryption:
-    key: !secret waterlezer_api_encryption_key
+#via Home Assistant Ontwikkelhulpmiddelen > services zoeken op esphome.watermeter_set_water_reading en via deze methode de juiste beginstand invoeren
+  services:
+    - service: set_water_reading
+      variables:
+        meter_value: int
+      then:
+        - globals.set:
+            id: totalWaterUsage
+            value: !lambda "return ( meter_value );"
+
+
+globals:
+  - id: totalWaterUsage
+    type: int
+    restore_value: true      # aanpassen naar no indien de nieuwe waarde onder de oude ligt
+    initial_value: '0'       # beginstand van je watermeter -> aanpassen via Home Assistant services
+
+
+button:  
+  - platform: restart
+    name: "_Restart device"
+  - platform: factory_reset
+    name: "_Restart with Factory Default Settings"
+  - platform: template
+    name: "_Reset - Total Water Counter"
+    id: button_reset_total
+    on_press:
+      - globals.set:
+          id: totalWaterUsage
+          value: "0"  
+
+
+sensor:
+  - platform: pulse_counter
+    pin: 
+      number: 5
+      mode:
+        input: true
+        pullup: true #v3.5 aanzetten
+    id: watermeter_pulse
+    name: "Watermeter pulse"
+    count_mode:
+      rising_edge: DISABLE
+      falling_edge: INCREMENT
+    state_class: measurement
+    update_interval: 1s
+    internal_filter: 100us
+    accuracy_decimals: 0
+    unit_of_measurement: 'L/min'
+  
+  - platform: template
+    name: "Watermeter total"
+    state_class: "total_increasing"
+    device_class: "water"
+    icon: mdi:water
+    update_interval: 1s
+    unit_of_measurement: L
+    accuracy_decimals: 0
+    lambda: |-
+      if (id(watermeter_pulse).state > 0) id(totalWaterUsage) += 1;
+      return id(totalWaterUsage);
+  - platform: wifi_signal
+    name: "WiFi Signal Sensor"
+    update_interval: 60s
+
+  - platform: uptime
+    name: "Uptime"
+
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: "IP-adres"
+      icon: mdi:ip-network
+    ssid:
+      name: "Netwerk"
+      icon: mdi:access-point-network
+    mac_address:
+      name: "Mac-adres"
+      icon: mdi:folder-key-network-outline
+
+
+  - platform: template
+    name: "Config Version"
+    icon: "mdi:label-outline"
+    update_interval: 6h
+    lambda: return {"v26.02.01"};
+      

@@ -1,11 +1,12 @@
-
 substitutions:
-  devicename: klok2
+  device_name: klok2
   friendly_name: Klok 2
+  ota_password: !secret klok2_ota_password
+  api_encryption_key: !secret klok2_api_encryption_key
+
 
 packages:
   ticker: !include common/ticker-common.yaml
 
-api:
-  encryption:
-    key: !secret klok2_api_encryption_key
+
+esphome:

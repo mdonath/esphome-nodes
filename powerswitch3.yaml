@@ -1,21 +1,16 @@
 substitutions:
-  devicename: powerswitch3
+  device_name: powerswitch3
   friendly_name: Sonoff Powerswitch 3
+  ota_password: !secret powerswitch3_ota_password
+  api_encryption_key: !secret powerswitch3_api_encryption_key
 
 
 packages:
-  wifi: !include common/wifi.yaml
   always: !include common/always.yaml
+  wifi: !include common/wifi.yaml
 
 
 esphome:
-  name: $devicename
-  friendly_name: $friendly_name
-
-
-api:
-    encryption:
-        key: !secret powerswitch3_api_encryption_key
 
 
 esp8266:

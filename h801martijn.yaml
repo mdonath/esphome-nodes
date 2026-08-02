@@ -1,21 +1,18 @@
 substitutions:
-  devicename: h801martijn
+  device_name: h801martijn
   friendly_name: H801 Martijn
-
-
-esphome:
-  includes:
-    - common/light_functions.h
-    - remotes/remote_grundig.h
+  ota_password: !secret h801martijn_ota_password
+  api_encryption_key: !secret h801martijn_api_encryption_key
 
 
 packages:
   h801: !include common/h801-common.yaml
 
 
-api:
-  encryption:
-    key: !secret h801martijn_api_encryption_key
+esphome:
+  includes:
+    - common/light_functions.h
+    - remotes/remote_grundig.h
 
 
 light:

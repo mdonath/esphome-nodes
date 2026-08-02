@@ -5,15 +5,8 @@ struct TimeDiffDays {
     uint8_t seconds;
 };
 
-
-time_t parse_datestring(std::string &datestring) {
-    struct tm timeinfo = {0};
-    strptime(datestring.c_str(), "%Y-%m-%d %H:%M:%S", &timeinfo);
-    return mktime(&timeinfo);
-}
-
-void calculate_diff(TimeDiffDays *tdd, time_t target, time_t now) {
-    time_t n = abs(difftime(target, now));
+void calculate_diff(TimeDiffDays *tdd, ESPTime target, ESPTime now) {
+    time_t n = abs(difftime(target.timestamp, now.timestamp));
     
     tdd->days = n / (24 * 3600);
 

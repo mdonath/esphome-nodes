@@ -1,23 +1,26 @@
+substitutions:
+  device_name: kruidvat-dual-plug
+  friendly_name: Kruidvat Dual Plug
+  ota_password: !secret kruidvat_dual_plug_ota_password
+  api_encryption_key: !secret kruidvat_dual_plug_api_encryption_key
+
+
 packages:
+  always: !include common/always.yaml
   wifi: !include common/wifi.yaml
 
+
 esphome:
-  name: kruidvat-dual-plug
-  friendly_name: Kruidvat Dual Plug
+
 
 esp8266:
   board: esp01_1m
   early_pin_init: false
 
+
 web_server:
 mdns:
-api:
-  encryption:
-    key: !secret kruidvat_dual_plug_api_encryption_key
-logger:
 
-ota:
-  - platform: esphome
 
 binary_sensor:
   - platform: gpio

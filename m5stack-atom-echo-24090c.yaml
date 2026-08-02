@@ -1,17 +1,14 @@
 substitutions:
-  name: m5stack-atom-echo-24090c
+  device_name: m5stack-atom-echo-24090c
   friendly_name: M5Stack Atom Echo 24090c
+  ota_password: !secret m5stack_atom_echo_24090c_ota_password
+  api_encryption_key: !secret m5stack_atom_echo_24090c_api_encryption_key
+
 
 packages:
-  m5stack.atom-echo-voice-assistant: github://esphome/firmware/voice-assistant/m5stack-atom-echo.yaml@main
+  m5stack.atom-echo-voice-assistant: github://esphome/wake-word-voice-assistants/m5stack-atom-echo/m5stack-atom-echo.yaml@main
   wifi: !include common/wifi.yaml
   always: !include common/always.yaml
 
-esphome:
-  name: ${name}
-  name_add_mac_suffix: false
-  friendly_name: ${friendly_name}
 
-api:
-  encryption:
-    key: wZTiPffB4HQwSEGrjku9Dt7ThS+qudihICUyNEea/i8=
+esphome:

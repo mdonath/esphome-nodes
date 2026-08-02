@@ -1,3 +1,10 @@
+packages:
+  always: !include always.yaml
+  wifi: !include wifi.yaml
+  mqtt: !include mqtt.yaml
+  hardware: !include ticker-hardware.yaml
+
+
 globals:
   - # The message to display when an alert is shown
     id: glob_alert_message
@@ -10,12 +17,12 @@ globals:
     restore_value: false
     initial_value: '100'
 
+
 esp8266:
   board: d1_mini
 
+
 esphome:
-  name: ${devicename}
-  friendly_name: ${friendly_name}
   on_boot:
     priority: -10
     then:
@@ -33,13 +40,6 @@ esphome:
   includes:
     - common/slideclock.h
     - common/slidefonts.h
-
-
-packages:
-  always: !include always.yaml
-  wifi: !include wifi.yaml
-  mqtt: !include mqtt.yaml
-  hardware: !include ticker-hardware.yaml
 
 
 api:

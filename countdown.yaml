@@ -1,15 +1,32 @@
 substitutions:
-  devicename: countdown
+  device_name: countdown
+  friendly_name: Countdown
+  ota_password: !secret countdown_ota_password
+  api_encryption_key: !secret countdown_api_encryption_key
+
   page_option_1: "Datetime"
   page_option_2: "Timestamp"
   page_option_3: "Countdown"
   page_option_4: "Unused"
 
-esphome:
-  name: ${devicename}
-  friendly_name: Countdown
-  platform: ESP8266
+
+packages:
+  always: !include common/always.yaml
+  wifi: !include common/wifi.yaml
+
+
+esp8266:
   board: d1_mini
+
+
+external_components:
+  - source:
+      type: local
+      path: my_components
+    components: [max7219_mapped]
+
+
+esphome:
   includes:
     - common/time_functions.h
   on_boot:
@@ -21,15 +38,6 @@ esphome:
           time.has_time:
 
 
-packages:
-  wifi: !include common/wifi.yaml
-  always: !include common/always.yaml
-  mqtt: !include common/mqtt.yaml
-
-
-api:
-
-
 time:
   - platform: homeassistant
     id: hass_time
@@ -38,7 +46,6 @@ time:
 spi:
   clk_pin: D5
   mosi_pin: D7
-  
   
 
 display:
@@ -50,7 +57,7 @@ display:
     index: [0x0B, 0x0C, 0x0D, 0x0E, 0x0F,   0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A,   0x00, 0x01, 0x02]
     lambda: |-
       auto time = id(hass_time).now();
-      auto selected_page = id(page).state;
+      auto selected_page = id(page).current_option();
       if (selected_page == "${page_option_1}") {
         // Show current date and time
         it.printf("%02d-%02d-%04d%d%d.%d.%d.%d.%d",
@@ -69,8 +76,8 @@ display:
         TimeDiffDays difference;
         calculate_diff(
           &difference,
-          parse_datestring(id(target).state),
-          time.timestamp
+          id(target).state_as_esptime(),
+          time
         );
 
         it.printf(0, "%3d %s",
@@ -87,6 +94,7 @@ display:
         // Unused
         it.print("todo");
       }
+
 
 binary_sensor:
   - platform: gpio
@@ -116,15 +124,13 @@ sensor:
       - script.execute: decrease
 
 
-text_sensor:
-  - platform: homeassistant
+datetime:
+  - platform: template
     id: target
-    entity_id: input_datetime.${devicename}_target
-    on_value:
-      then:
-        - logger.log:
-            format: "Setting new target %s"
-            args: [x.c_str()]
+    name: Target Datetime
+    type: datetime
+    optimistic: true
+    restore_value: true
 
 
 number:
@@ -159,7 +165,7 @@ script:
     then:
       - logger.log: "Next Page"
       - lambda: |-
-          auto selected_page = id(page).state;
+          auto selected_page = id(page).current_option();
           auto call = id(page).make_call();
           if (selected_page == "${page_option_1}") {
             call.set_option("${page_option_2}");
@@ -177,7 +183,7 @@ script:
       - logger.log: "Increase"
       - if:
           condition:
-            lambda: 'return id(page).state == "${page_option_1}";'
+            lambda: 'return id(page).current_option() == "${page_option_1}";'
           then:
             - number.increment:
                 id: brightness
@@ -188,7 +194,7 @@ script:
       - logger.log: "Decrease"
       - if:
           condition:
-            lambda: 'return id(page).state == "${page_option_1}";'
+            lambda: 'return id(page).current_option() == "${page_option_1}";'
           then:
             - number.decrement:
                 id: brightness

@@ -1,24 +1,32 @@
-esphome:
-  name: toeter
-  platform: ESP32
-  board: esp-wrover-kit
+substitutions:
+  device_name: toeter
+  friendly_name: Toeter
+  ota_password: !secret toeter_ota_password
+  api_encryption_key: !secret toeter_api_encryption_key
 
 
 packages:
   wifi: !include common/wifi.yaml
   always: !include common/always.yaml
 
-# Enable Home Assistant API
-api:
+
+esphome:
+
+
+esp32:
+  board: esp-wrover-kit
+
 
 font:
   - file: "fonts/Comic Sans MS.ttf"
     id: my_font
     size: 20
 
+
 i2c:
   sda: 4
   scl: 15
+
 
 display:
   - platform: ssd1306_i2c
@@ -28,10 +36,12 @@ display:
     lambda: |-
       it.printf(0,32, id(my_font), "%s", id(sound_sensor).state.c_str());
 
+
 sensor:
   - platform: homeassistant
     id: toeter_sound_duration
     entity_id: sensor.toeter_sound_duration
+
 
 text_sensor:
   - platform: template
@@ -52,6 +62,7 @@ text_sensor:
         return {"sound 6"};
       }
       return {"no sound"};
+
 
 switch:
   - platform: gpio

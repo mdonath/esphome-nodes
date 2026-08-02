@@ -1,6 +1,8 @@
 substitutions:
-  devicename: deurbelindicator
+  device_name: deurbel-indicator
   friendly_name: Deurbel Indicator
+  ota_password: !secret deurbel_indicator_ota_password
+  api_encryption_key: !secret deurbel_indicator_api_encryption_key
 
   pin_button_red: D1
   pin_button_green: D2
@@ -22,12 +24,12 @@ packages:
   wifi: !include common/wifi.yaml
   always: !include common/always.yaml
 
+
 esp8266:
   board: d1_mini
 
+
 esphome:
-  name: ${devicename}
-  friendly_name: ${friendly_name}
   on_boot:
     priority: -10
     then:
@@ -71,8 +73,6 @@ select:
 
 # Enable Home Assistant API
 api:
-  encryption:
-    key: !secret deurbel_indicator_api_encryption_key
   # Define services to use from HA
   services:
 

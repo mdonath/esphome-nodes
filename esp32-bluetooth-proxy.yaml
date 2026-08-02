@@ -1,25 +1,24 @@
 substitutions:
-  name: esp32-bluetooth-proxy
+  device_name: esp32-bluetooth-proxy
   friendly_name: Bluetooth Proxy
+  ota_password: !secret airsensor1_ota_password
+  api_encryption_key: !secret esp32_bluetooth_proxy_api_encryption_key
+
 
 packages:
   wifi: !include common/wifi.yaml
   always: !include common/always.yaml
 
+
 esphome:
-  name: esp32-bluetooth-proxy-eea580
-  friendly_name: Bluetooth Proxy
   min_version: 2025.2.1
-  name_add_mac_suffix: False
+
 
 esp32:
   board: esp32dev
   framework:
     type: esp-idf
 
-api:
-  encryption:
-    key: !secret esp32_bluetooth_proxy_api_encryption_key
 
 esp32_ble_tracker:
   scan_parameters:

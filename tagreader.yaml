@@ -1,6 +1,9 @@
 substitutions:
-  devicename: tagreader
+  device_name: tagreader
   friendly_name: Tag Reader
+  ota_password: !secret tagreader_ota_password
+  api_encryption_key: !secret tagreader_api_encryption_key
+
   pin_buzzer: D8
   pin_activity_led: D7
   sound_success: "success:d=24,o=5,b=100:c,g,b"
@@ -9,12 +12,16 @@ substitutions:
   sound_scan_success: "success:d=24,o=5,b=100:c,g,b"
 
 
+packages:
+  wifi: !include common/wifi.yaml
+  always: !include common/always.yaml
+
+
 esp8266:
   board: d1_mini
 
+
 esphome:
-  name: $devicename
-  friendly_name: ${friendly_name}
   # If buzzer is enabled, notify on api connection success
   on_boot:
     priority: -10
@@ -32,10 +39,6 @@ esphome:
         flash_length: 500ms
     - switch.turn_on: buzzer_enabled
     - switch.turn_on: led_enabled
-
-packages:
-  wifi: !include common/wifi.yaml
-  always: !include common/always.yaml
 
 
 # Define switches to control LED and buzzer from HA
@@ -57,8 +60,6 @@ switch:
 
 # Enable Home Assistant API
 api:
-  encryption:
-    key: !secret tagreader_api_encryption_key
   homeassistant_services: true
   services:
   - service: rfidreader_tag_ok

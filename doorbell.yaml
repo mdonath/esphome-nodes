@@ -1,3 +1,15 @@
+substitutions:
+  device_name: doorbell
+  friendly_name: Deurbel
+  ota_password: !secret doorbell_ota_password
+  api_encryption_key: !secret doorbell_api_encryption_key
+
+
+packages:
+  always: !include common/always.yaml
+  wifi: !include common/wifi.yaml 
+
+
 globals:
   - id: chime
     type: bool
@@ -10,20 +22,9 @@ esp8266:
 
 
 esphome:
-  name: doorbell
-  friendly_name: Deurbel
   project:
     name: zuidwijk.doorbell
     version: "2.0"
-
-packages:
-  always: !include common/always.yaml
-  wifi: !include common/wifi.yaml 
- 
-# Enable Home Assistant API
-api:
-  encryption:
-    key: !secret doorbell_api_encryption_key
 
 
 number:
@@ -43,11 +44,8 @@ number:
 time:
   - platform: homeassistant
     id: homeassistant_time
- 
-text_sensor:
-  - platform: version
-    name: ESPHome Version
- 
+
+
 sensor:
   - platform: uptime
     name: Uptime

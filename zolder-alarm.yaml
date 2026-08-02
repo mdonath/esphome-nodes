@@ -1,6 +1,9 @@
 substitutions:
-  devicename: zolder-alarm
+  device_name: zolder-alarm
   friendly_name: Zolder Alarm
+  ota_password: !secret zolder_alarm_ota_password
+  api_encryption_key: !secret zolder_alarm_api_encryption_key
+
   pin_buzzer: D5
   pin_button: D6
   pin_rgb: D7
@@ -16,10 +19,8 @@ packages:
 esp8266:
   board: d1_mini
 
+
 esphome:
-  name: ${devicename}
-  friendly_name: ${friendly_name}
-  name_add_mac_suffix: false
   on_boot:
     priority: -10
     then:
@@ -46,8 +47,6 @@ esphome:
 
 # Enable Home Assistant API
 api:
-  encryption:
-    key: !secret zolder_alarm_api_encryption_key
   services:
     # Service to play RTTTL
     - service: play_rtttl
@@ -62,9 +61,6 @@ api:
       then:
         - script.execute: indicate_doorbell
 
-text_sensor:
-  - platform: version
-    name: ESPHome Version
 
 light:
 - platform: neopixelbus
@@ -117,6 +113,7 @@ script:
           green: 100%
           blue: 0%
           flash_length: 10s
+
   - id: single_press
     then:
       - logger.log: "Button pressed: single press"

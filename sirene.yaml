@@ -9,27 +9,22 @@
 #
 
 substitutions:
-  devicename: sirene
+  device_name: sirene
   friendly_name: Sirene
+  ota_password: !secret sirene_ota_password
+  api_encryption_key: !secret sirene_api_encryption_key
 
 
 packages:
-  wifi: !include common/wifi-wr3.yaml
   always: !include common/always.yaml
+  wifi: !include common/wifi-wr3.yaml
 
 
 esphome:
-  name: ${devicename}
-  friendly_name: ${friendly_name}
 
 
 rtl87xx:
   board: wr3
-
-
-api:
-  encryption:
-    key: !secret sirene_api_encryption_key
 
 
 switch:
@@ -44,6 +39,8 @@ switch:
 sensor:
     - platform: wifi_signal
       name: "Sirene-wifi"
+
+
 binary_sensor:
   - platform: gpio
     name: Sirene-PairOnOff
@@ -52,6 +49,8 @@ binary_sensor:
       inverted: true
       mode:
         input: true
+
+
 text_sensor:
   - platform: libretiny
     version:

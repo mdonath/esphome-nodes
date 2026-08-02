@@ -1,21 +1,18 @@
 substitutions:
-  devicename: h801abel
+  device_name: h801abel
   friendly_name: H801 Abel
-
-
-esphome:
-  includes:
-    - common/light_functions.h
-    - remotes/remote_abel.h
+  ota_password: !secret h801abel_ota_password
+  api_encryption_key: !secret h801abel_api_encryption_key
 
 
 packages:
   h801: !include common/h801-common.yaml
 
 
-api:
-  encryption:
-    key: !secret h801abel_api_encryption_key
+esphome:
+  includes:
+    - common/light_functions.h
+    - remotes/remote_abel.h
 
 
 light:

@@ -1,4 +1,22 @@
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+
+
+api:
+  encryption:
+    key: ${api_encryption_key}
+
+
 ota:
     - platform: esphome
+      password: ${ota_password}
+
 
 logger:
+
+ 
+text_sensor:
+  - platform: version
+    name: ESPHome Version
+ 
