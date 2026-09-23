@@ -1,6 +1,6 @@
 substitutions:
   device_name: waterlezer2026
-  friendly_name: Waterlezer
+  friendly_name: Waterlezer 2026
   ota_password: !secret waterlezer_ota_password
   api_encryption_key: !secret waterlezer_api_encryption_key
 
@@ -53,7 +53,7 @@ api:
 globals:
   - id: totalWaterUsage
     type: int
-    restore_value: true      # aanpassen naar no indien de nieuwe waarde onder de oude ligt
+    restore_value: false      # aanpassen naar no indien de nieuwe waarde onder de oude ligt
     initial_value: '0'       # beginstand van je watermeter -> aanpassen via Home Assistant services
 
 
