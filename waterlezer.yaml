@@ -1,5 +1,5 @@
 substitutions:
-  device_name: waterlezer
+  device_name: waterlezer2026
   friendly_name: Waterlezer
   ota_password: !secret waterlezer_ota_password
   api_encryption_key: !secret waterlezer_api_encryption_key
