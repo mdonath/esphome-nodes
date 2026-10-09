@@ -1,22 +1,4 @@
-# Firmware voor eigen devices
-
-## Installeren en updaten van ESPHOME
-
-Installeer tenminste Python 3.9:
-
-```shell
-sudo apt-get install python3.10 # of hoger
-```
-
-Maak een venv met de geïnstalleerde versie (de standaard Python kan een lagere zijn), en activeer deze:
-```shell
-python3 -m venv venv
-. venv/bin/activate
-```
-
-Installeer `esphome`:
-```shell
-pip install esphome
+"Ni
 ```
 
 Later kun je updaten met:

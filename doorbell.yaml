@@ -1,7 +1,6 @@
 substitutions:
   device_name: doorbell
   friendly_name: Deurbel
-  ota_password: !secret doorbell_ota_password
   api_encryption_key: !secret doorbell_api_encryption_key
 
 

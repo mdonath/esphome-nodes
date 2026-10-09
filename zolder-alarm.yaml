@@ -1,7 +1,6 @@
 substitutions:
   device_name: zolder-alarm
   friendly_name: Zolder Alarm
-  ota_password: !secret zolder_alarm_ota_password
   api_encryption_key: !secret zolder_alarm_api_encryption_key
 
   pin_buzzer: D5
