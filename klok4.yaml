@@ -1,7 +1,6 @@
 substitutions:
   device_name: klok4
   friendly_name: Klok 4
-  ota_password: !secret klok4_ota_password
   api_encryption_key: !secret klok4_api_encryption_key
 
 

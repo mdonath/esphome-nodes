@@ -1,7 +1,6 @@
 substitutions:
   device_name: tagreader
   friendly_name: Tag Reader
-  ota_password: !secret tagreader_ota_password
   api_encryption_key: !secret tagreader_api_encryption_key
 
   pin_buzzer: D8

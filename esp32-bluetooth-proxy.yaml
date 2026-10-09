@@ -1,7 +1,6 @@
 substitutions:
   device_name: esp32-bluetooth-proxy
   friendly_name: Bluetooth Proxy
-  ota_password: !secret airsensor1_ota_password
   api_encryption_key: !secret esp32_bluetooth_proxy_api_encryption_key
 
 
