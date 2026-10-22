@@ -1,7 +1,6 @@
 substitutions:
   device_name: powerswitch2
   friendly_name: Sonoff Powerswitch 2
-  ota_password: !secret powerswitch2_ota_password
   api_encryption_key: !secret powerswitch2_api_encryption_key
 
 

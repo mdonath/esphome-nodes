@@ -1,7 +1,6 @@
 substitutions:
   device_name: kruidvat-dual-plug
   friendly_name: Kruidvat Dual Plug
-  ota_password: !secret kruidvat_dual_plug_ota_password
   api_encryption_key: !secret kruidvat_dual_plug_api_encryption_key
 
 

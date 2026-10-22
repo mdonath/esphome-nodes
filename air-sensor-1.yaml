@@ -1,7 +1,6 @@
 substitutions:
   device_name: air-sensor-1
   friendly_name: Air Sensor 1
-  ota_password: !secret airsensor1_ota_password
   api_encryption_key: !secret airsensor1_api_encryption_key
 
 

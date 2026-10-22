@@ -1,7 +1,6 @@
 substitutions:
   device_name: countdown
   friendly_name: Countdown
-  ota_password: !secret countdown_ota_password
   api_encryption_key: !secret countdown_api_encryption_key
 
   page_option_1: "Datetime"

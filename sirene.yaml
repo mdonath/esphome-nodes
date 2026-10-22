@@ -11,7 +11,6 @@
 substitutions:
   device_name: sirene
   friendly_name: Sirene
-  ota_password: !secret sirene_ota_password
   api_encryption_key: !secret sirene_api_encryption_key
 
 
