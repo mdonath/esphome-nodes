@@ -1,7 +1,6 @@
 substitutions:
   device_name: h801abel
   friendly_name: H801 Abel
-  ota_password: !secret h801abel_ota_password
   api_encryption_key: !secret h801abel_api_encryption_key
 
 

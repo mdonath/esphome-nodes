@@ -11,6 +11,7 @@ api:
 ota:
     - platform: esphome
       encryption:
+      # password: ${ota_password}
 
 
 logger:

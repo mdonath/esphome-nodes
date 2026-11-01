@@ -1,7 +1,6 @@
 substitutions:
   device_name: h801marjolein
   friendly_name: H801 Marjolein
-  ota_password: !secret h801marjolein_ota_password
   api_encryption_key: !secret h801marjolein_api_encryption_key
 
 

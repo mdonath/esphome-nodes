@@ -1,7 +1,6 @@
 substitutions:
   device_name: h801martijn
   friendly_name: H801 Martijn
-  ota_password: !secret h801martijn_ota_password
   api_encryption_key: !secret h801martijn_api_encryption_key
 
 
